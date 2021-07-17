@@ -1,0 +1,4 @@
+<div class="explorer-folder-component">
+    <span>{{ name }}</span>
+    <explorer-folder-component *ngFor="let folder of folders" [parent]="this" [name]="folder"></explorer-folder-component>
+</div>
