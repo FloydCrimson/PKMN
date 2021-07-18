@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 
-import { ExplorerFolderComponentModule } from '../explorer-folder/explorer-folder.component.module';
+import { ExplorerElementComponentModule } from '../explorer-element/explorer-element.component.module';
 
 import { ExplorerComponent } from './explorer.component';
 
 @NgModule({
   imports: [
-    ExplorerFolderComponentModule
+    ExplorerElementComponentModule
   ],
   declarations: [
     ExplorerComponent

@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { ExplorerFolderComponent } from './explorer-folder.component';
+import { ExplorerElementComponent } from './explorer-element.component';
 
 @NgModule({
   imports: [
     CommonModule
   ],
   declarations: [
-    ExplorerFolderComponent
+    ExplorerElementComponent
   ],
   exports: [
-    ExplorerFolderComponent
+    ExplorerElementComponent
   ]
 })
-export class ExplorerFolderComponentModule { }
+export class ExplorerElementComponentModule { }

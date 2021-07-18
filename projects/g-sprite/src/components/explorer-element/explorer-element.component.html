@@ -1,0 +1,4 @@
+<div class="explorer-element-component">
+    <span>{{ name }}</span>
+    <explorer-element-component *ngFor="let element of elements" [parent]="this" [name]="element.name" [type]="element.type"></explorer-element-component>
+</div>
