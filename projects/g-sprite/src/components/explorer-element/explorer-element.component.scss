@@ -1,5 +1,22 @@
 .explorer-element-component {
-  >explorer-element-component>div.explorer-element-component {
+  >span {
     margin-left: 10px;
+  }
+
+  >div.elements-container {
+    margin-left: 10px;
+  }
+
+  &.state-closed {
+    div.elements-container {
+      visibility: hidden;
+      height: 0;
+    }
+  }
+
+  &.state-selected {
+    >span.element-name {
+      background-color: yellow;
+    }
   }
 }
