@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ModulesService } from '@node-cs/client';
+import { ModulesService, FSModule } from '@node-cs/client';
 
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
 
@@ -46,24 +46,15 @@ export class ExplorerElementComponent implements ExplorerImplementation {
             }
             if (!this.elements) {
                 this.elements = [];
-                const [err1, files] = await this.modulesService.getMethod('fs', 'readdir')(path, { encoding: 'utf8' });
-                if (!err1 && files?.length > 0) {
-                    for (const name of files) {
-                        const [err2, stats] = await this.modulesService.getMethod('fs', 'lstat')(path + '/' + name, {});
-                        if (!err2 && stats) {
-                            const isDirectory = stats.isDirectory[1] ? null : stats.isDirectory[0];
-                            const isFile = stats.isFile[1] ? null : stats.isFile[0];
-                            if (isDirectory === null || isFile === null) {
-                                this.elements.push({ name, type: 'unknown' });
-                            } else if (isDirectory && !isFile) {
-                                this.elements.push({ name, type: 'directory' });
-                            } else if (isFile && !isDirectory) {
-                                this.elements.push({ name, type: 'file' });
-                            } else {
-                                this.elements.push({ name, type: 'unknown' });
-                            }
+                const files = await this.modulesService.getMethod('fs', 'readdir')(path, { encoding: 'utf8', withFileTypes: true }) as FSModule.Dirent[];
+                if (files?.length > 0) {
+                    for (const file of files) {
+                        if (file.isDirectory && !file.isFile) {
+                            this.elements.push({ name: file.name, type: 'directory' });
+                        } else if (file.isFile && !file.isDirectory) {
+                            this.elements.push({ name: file.name, type: 'file' });
                         } else {
-                            this.elements.push({ name, type: 'unknown' });
+                            this.elements.push({ name: file.name, type: 'unknown' });
                         }
                     }
                 }
