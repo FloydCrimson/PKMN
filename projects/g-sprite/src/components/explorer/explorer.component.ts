@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
 
@@ -13,10 +13,17 @@ export class ExplorerComponent implements ExplorerImplementation {
 
     @Output('onSelectElement') public onSelectElementEmitter = new EventEmitter<ExplorerImplementation>();
 
+    @ViewChild('element', { static: true }) public element?: ExplorerImplementation;
+
     public parent?: ExplorerImplementation;
     public name?: string = 'images';
     public type?: 'directory' | 'file' | 'unknown' = 'directory';
     public selectedElement?: ExplorerImplementation;
+
+    public async onUpdateElement(force: boolean): Promise<void> {
+        await this.element?.onUpdateElement(force);
+        this.onSelectElement(undefined);
+    }
 
     public onSelectElement(element?: ExplorerImplementation): void {
         if (this.selectedElement && element) {

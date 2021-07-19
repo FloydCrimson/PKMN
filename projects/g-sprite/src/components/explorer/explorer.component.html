@@ -1,3 +1,4 @@
 <div class="explorer-container">
-    <explorer-element-component [parent]="this" [name]="name" [type]="type" (onSelectElement)="onSelectElement($event)"></explorer-element-component>
+    <button class="button-refresh" (click)="onUpdateElement(true)">Refresh</button>
+    <explorer-element-component #element [parent]="this" [name]="name" [type]="type" (onSelectElement)="onSelectElement($event)"></explorer-element-component>
 </div>

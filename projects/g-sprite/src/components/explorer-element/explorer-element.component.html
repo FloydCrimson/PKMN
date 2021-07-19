@@ -1,5 +1,5 @@
 <div class="explorer-element-component" [ngClass]="{ 'type-directory': type === 'directory', 'type-file': type === 'file', 'type-unknown': type === 'unknown', 'state-opened': opened, 'state-closed': !opened, 'state-selected': selected, 'state-deselected': !selected }">
-    <span class="element-symbol" (click)="onOpenOrCloseElement()">{{ (type === 'directory') ? (opened ? '-' : '+') : ' ' }}</span>
+    <span class="element-symbol" (click)="onOpenOrCloseElement()">{{ (type === 'directory') ? (opened ? '-' : '+') : ((type === 'unknown') ? '?' : ' ') }}</span>
     <span class="element-name" (click)="onSelectElement(this)">{{ name }}</span>
     <div class="elements-container">
         <explorer-element-component *ngFor="let element of elements" [parent]="this" [name]="element.name" [type]="element.type" (onSelectElement)="onSelectElement($event)"></explorer-element-component>
