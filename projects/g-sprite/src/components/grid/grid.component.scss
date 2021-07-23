@@ -5,18 +5,11 @@
   display: grid;
   grid-gap: 1px;
   grid-template-areas:
-    'toolbar toolbar toolbar toolbar'
-    'left-top center center right'
-    'left-top center center right'
-    'left-bottom center center right'
-    'left-bottom center center right';
+    'left-top center-right center-right center-right'
+    'left-bottom center-right center-right center-right';
 
   >div {
     background-color: rgba(255, 255, 255, 0.8);
-  }
-
-  >div.grid-toolbar {
-    grid-area: toolbar;
   }
 
   >div.grid-left-top {
@@ -27,11 +20,7 @@
     grid-area: left-bottom;
   }
 
-  >div.grid-center {
-    grid-area: center;
-  }
-
-  >div.grid-right {
-    grid-area: right;
+  >div.grid-center-right {
+    grid-area: center-right;
   }
 }

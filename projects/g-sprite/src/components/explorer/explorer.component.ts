@@ -10,13 +10,13 @@ import { ExplorerImplementation } from '../../implementations/explorer.implement
 export class ExplorerComponent implements ExplorerImplementation {
 
     @Input('root') public root?: string;
+    @Input('name') public name?: string;
 
     @Output('onSelectElement') public onSelectElementEmitter = new EventEmitter<ExplorerImplementation>();
 
     @ViewChild('element', { static: true }) public element?: ExplorerImplementation;
 
     public parent?: ExplorerImplementation;
-    public name?: string = 'images';
     public type?: 'directory' | 'file' | 'unknown' = 'directory';
     public selectedElement?: ExplorerImplementation;
 

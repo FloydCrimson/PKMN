@@ -1,0 +1,11 @@
+<div class="option-block-container">
+    <button class="button-open-close" (click)="onOpenOrCloseOption()">{{ opened ? 'Close' : 'Open' }}</button>
+    <button class="button-save" (click)="onSaveOption()">Save</button>
+    <label><span>name</span><input type="text" value="" (change)="onNameChange($event)"></label>
+    <label><span>sprite_width</span><input type="number" value="1" (change)="onSpriteWidthChange($event)"></label>
+    <label><span>sprite_height</span><input type="number" value="1" (change)="onSpriteHeightChange($event)"></label>
+    <label><span>block_width</span><input type="number" value="1" (change)="onBlockWidthChange($event)"></label>
+    <label><span>block_height</span><input type="number" value="1" (change)="onBlockHeightChange($event)"></label>
+    <label *ngFor="let cell of optionUI?.cells; let i = index"><span [ngClass]="{ 'state-selected': cell.selected }" (click)="onCellSelectedChange(cell, i)">{{ 'index_' + i }}</span><input type="text" value="" (change)="onCellSuffixChange($event, i)"></label>
+    <span class="error">{{ error }}</span>
+</div>

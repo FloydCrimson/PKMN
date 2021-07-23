@@ -1,0 +1,22 @@
+.option-container {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-gap: 1px;
+  grid-template-areas:
+    'left left right-top'
+    'left left right-top'
+    'left left right-bottom';
+
+  >div.option-left {
+    grid-area: left;
+  }
+
+  >div.option-right-top {
+    grid-area: right-top;
+  }
+
+  >div.option-right-bottom {
+    grid-area: right-bottom;
+  }
+}

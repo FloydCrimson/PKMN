@@ -1,0 +1,11 @@
+.option-block-container {
+  display: grid;
+
+  >label>span.state-selected {
+    background-color: yellow;
+  }
+
+  >span.error {
+    color: red;
+  }
+}
