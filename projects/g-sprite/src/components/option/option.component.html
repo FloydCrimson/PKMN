@@ -3,7 +3,7 @@
         <option-canvas-component [selectedElement]="selectedElement" [optionDraw]="optionDraw"></option-canvas-component>
     </div>
     <div class="option-right-top">
-        <option-block-component #block (onOpenOrCloseOption)="onOpenOrCloseOption($event)" (onSaveOption)="onSaveOption()" (onOptionDataChange)="onOptionDataChange($event)" (onOptionDrawChange)="onOptionDrawChange($event)"></option-block-component>
+        <option-block-component #block [selectedElement]="selectedElement" (onOpenOrCloseOption)="onOpenOrCloseOption($event)" (onSaveOption)="onSaveOption()" (onOptionDataChange)="onOptionDataChange($event)" (onOptionDrawChange)="onOptionDrawChange($event)"></option-block-component>
     </div>
     <div class="option-right-bottom">
         <option-preview-component [optionData]="optionData"></option-preview-component>

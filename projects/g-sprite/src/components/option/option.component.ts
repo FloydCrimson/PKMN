@@ -11,13 +11,7 @@ import { ExplorerImplementation } from '../../implementations/explorer.implement
 })
 export class OptionComponent {
 
-    private _selectedElement?: ExplorerImplementation;
-    @Input('selectedElement') public set selectedElement(selectedElement: ExplorerImplementation | undefined) {
-        this.onSelectedElementChange(this._selectedElement = selectedElement);
-    };
-    public get selectedElement(): ExplorerImplementation | undefined {
-        return this._selectedElement;
-    };
+    @Input('selectedElement') public selectedElement?: ExplorerImplementation;
 
     @ViewChildren('block') public options?: QueryList<OptionImplementation>;
 
@@ -61,11 +55,6 @@ export class OptionComponent {
 
     public onOptionDrawChange(optionDraw?: { x: number; y: number; w: number; h: number; }[]): void {
         this.optionDraw = optionDraw;
-    }
-
-    public onSelectedElementChange(element?: ExplorerImplementation): void {
-        this.optionData = undefined;
-        this.optionDraw = undefined;
     }
 
 }
