@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { OptionDataImplementation, OptionImplementation } from '../../implementations/option.implementation';
-import { ExplorerImplementation } from '../../implementations/explorer.implementation';
+import { OptionBlockComponentDataType, OptionDataImplementation, OptionImplementation, OptionJSONImplementation } from '../../implementations/option.implementation';
 
 @Component({
     selector: 'option-block-component',
@@ -10,24 +9,31 @@ import { ExplorerImplementation } from '../../implementations/explorer.implement
 })
 export class OptionBlockComponent implements OptionImplementation {
 
-    private _selectedElement?: ExplorerImplementation;
-    @Input('selectedElement') public set selectedElement(selectedElement: ExplorerImplementation | undefined) {
-        this._selectedElement = selectedElement;
-        this.update();
+    private _explorerComponentJSONsSelectSprite?: OptionJSONImplementation['sprites'];
+    @Input('explorerComponentJSONsSelectSprite') public set explorerComponentJSONsSelectSprite(explorerComponentJSONsSelectSprite: OptionJSONImplementation['sprites'] | undefined) {
+        this._explorerComponentJSONsSelectSprite = explorerComponentJSONsSelectSprite;
+        if (this._explorerComponentJSONsSelectSprite) {
+            this.name = Object.keys(this._explorerComponentJSONsSelectSprite).pop()!;
+            const sprite = this._explorerComponentJSONsSelectSprite[this.name];
+            if (sprite.type === 'block') {
+                this.optionUI = this.initialize(sprite.data as OptionBlockComponentDataType);
+                this.update();
+            }
+        }
     };
-    public get selectedElement(): ExplorerImplementation | undefined {
-        return this._selectedElement;
+    public get explorerComponentJSONsSelectSprite(): OptionJSONImplementation['sprites'] | undefined {
+        return this._explorerComponentJSONsSelectSprite;
     };
 
     @Output('onOpenOrCloseOption') public onOpenOrCloseOptionEmitter = new EventEmitter<OptionImplementation>();
     @Output('onSaveOption') public onSaveOptionEmitter = new EventEmitter();
-    @Output('onOptionDataChange') public onOptionDataChangeEmitter = new EventEmitter<OptionDataImplementation<OptionBlockComponentDataType>>();
+    @Output('onOptionDataChange') public onOptionDataChangeEmitter = new EventEmitter<OptionDataImplementation<'block'>>();
     @Output('onOptionDrawChange') public onOptionDrawChangeEmitter = new EventEmitter<{ x: number; y: number; w: number; h: number; }[]>();
 
     public opened: boolean = true;
     public error: string = '';
     public name: string = '';
-    public optionUI: OptionBlockComponentDataUIType = this.initialize();
+    public optionUI: OptionBlockComponentUIType = this.initialize();
 
     private option?: OptionBlockComponentDataType;
 
@@ -45,17 +51,31 @@ export class OptionBlockComponent implements OptionImplementation {
 
     //
 
-    private initialize(): OptionBlockComponentDataUIType {
-        return {
-            sprite_width: '1',
-            sprite_height: '1',
-            block_width: '1',
-            block_height: '1',
-            cells: [{
-                suffix: '',
-                selected: false
-            }]
-        };
+    private initialize(data?: OptionBlockComponentDataType): OptionBlockComponentUIType {
+        if (data) {
+            return {
+                sprite_width: data.sprite_width.toString(),
+                sprite_height: data.sprite_height.toString(),
+                block_width: data.block_width.toString(),
+                block_height: data.block_height.toString(),
+                cells: Object.keys(data.cells).reduce((pv, cv) => {
+                    const index = data.cells[cv];
+                    pv[index].suffix = cv;
+                    return pv;
+                }, new Array(data.block_width * data.block_height).fill({}).map(_ => { return { suffix: '', selected: false }; }))
+            };
+        } else {
+            return {
+                sprite_width: '1',
+                sprite_height: '1',
+                block_width: '1',
+                block_height: '1',
+                cells: [{
+                    suffix: '',
+                    selected: false
+                }]
+            };
+        }
     }
 
     public onCellSelectedChange(cell: { suffix: string; selected: boolean; }, index: number): void {
@@ -147,7 +167,7 @@ export class OptionBlockComponent implements OptionImplementation {
 
 }
 
-export interface OptionBlockComponentDataUIType {
+type OptionBlockComponentUIType = {
     sprite_width: string;
     sprite_height: string;
     block_width: string;
@@ -156,14 +176,4 @@ export interface OptionBlockComponentDataUIType {
         suffix: string;
         selected: boolean;
     }[]
-}
-
-export interface OptionBlockComponentDataType {
-    sprite_width: number;
-    sprite_height: number;
-    block_width: number;
-    block_height: number;
-    cells: {
-        [suffix: string]: number;
-    }
-}
+};

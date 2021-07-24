@@ -1,7 +1,7 @@
 import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { ModulesService } from '@node-cs/client';
 
-import { OptionDataImplementation, OptionImplementation } from '../../implementations/option.implementation';
+import { OptionImplementation, OptionJSONImplementation } from '../../implementations/option.implementation';
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
 
 @Component({
@@ -11,11 +11,13 @@ import { ExplorerImplementation } from '../../implementations/explorer.implement
 })
 export class OptionComponent {
 
-    @Input('selectedElement') public selectedElement?: ExplorerImplementation;
+    @Input('explorerComponentImagesSelectElement') public explorerComponentImagesSelectElement?: ExplorerImplementation;
+    @Input('explorerComponentJSONsSelectElement') public explorerComponentJSONsSelectElement?: ExplorerImplementation;
+    @Input('explorerComponentJSONsSelectSprite') public explorerComponentJSONsSelectSprite?: OptionJSONImplementation['sprites'];
 
     @ViewChildren('block') public options?: QueryList<OptionImplementation>;
 
-    public optionData?: OptionDataImplementation<any>;
+    public optionData?: OptionJSONImplementation['sprites'];
     public optionDraw?: { x: number; y: number; w: number; h: number; }[];
 
     constructor(
@@ -34,13 +36,13 @@ export class OptionComponent {
     }
 
     public async onSaveOption(): Promise<void> {
-        const imagePath = this.selectedElement?.getPath();
-        const rootPath = this.selectedElement?.getRootElement()?.getPath();
+        const imagePath = this.explorerComponentImagesSelectElement?.getPath();
+        const rootPath = this.explorerComponentImagesSelectElement?.getRootElement()?.getPath();
         if (imagePath && rootPath) {
             const location = imagePath.replace(rootPath + '/images', '');
             const jsonPath = rootPath + '/jsons' + location.split('.').slice(0, -1).join('') + '.json';
             const exists = await this.modulesService.getMethod('fs', 'access')(jsonPath, 'F_OK').then(_ => true).catch(_ => false);
-            const json = exists ?
+            const json: OptionJSONImplementation = exists ?
                 JSON.parse(await this.modulesService.getMethod('fs', 'readFile')(jsonPath, { encoding: 'utf8' })) :
                 { location, sprites: {} };
             Object.assign(json.sprites, this.optionData);
@@ -49,7 +51,7 @@ export class OptionComponent {
         }
     }
 
-    public onOptionDataChange(optionData: OptionDataImplementation<any>): void {
+    public onOptionDataChange(optionData: OptionJSONImplementation['sprites']): void {
         this.optionData = optionData;
     }
 

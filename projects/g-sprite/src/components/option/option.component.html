@@ -1,9 +1,9 @@
 <div class="option-container">
     <div class="option-left">
-        <option-canvas-component [selectedElement]="selectedElement" [optionDraw]="optionDraw"></option-canvas-component>
+        <option-canvas-component [explorerComponentImagesSelectElement]="explorerComponentImagesSelectElement" [optionDraw]="optionDraw"></option-canvas-component>
     </div>
     <div class="option-right-top">
-        <option-block-component #block [selectedElement]="selectedElement" (onOpenOrCloseOption)="onOpenOrCloseOption($event)" (onSaveOption)="onSaveOption()" (onOptionDataChange)="onOptionDataChange($event)" (onOptionDrawChange)="onOptionDrawChange($event)"></option-block-component>
+        <option-block-component #block [explorerComponentJSONsSelectSprite]="explorerComponentJSONsSelectSprite" (onOpenOrCloseOption)="onOpenOrCloseOption($event)" (onSaveOption)="onSaveOption()" (onOptionDataChange)="onOptionDataChange($event)" (onOptionDrawChange)="onOptionDrawChange($event)"></option-block-component>
     </div>
     <div class="option-right-bottom">
         <option-preview-component [optionData]="optionData"></option-preview-component>

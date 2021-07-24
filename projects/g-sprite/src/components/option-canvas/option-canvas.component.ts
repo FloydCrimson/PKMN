@@ -10,12 +10,12 @@ import { ModulesService } from '@node-cs/client';
 })
 export class OptionCanvasComponent {
 
-    private _selectedElement?: ExplorerImplementation;
-    @Input('selectedElement') public set selectedElement(selectedElement: ExplorerImplementation | undefined) {
-        this.onSelectedElementChange(this._selectedElement = selectedElement);
+    private _explorerComponentImagesSelectElement?: ExplorerImplementation;
+    @Input('explorerComponentImagesSelectElement') public set explorerComponentImagesSelectElement(explorerComponentImagesSelectElement: ExplorerImplementation | undefined) {
+        this.onSelectedElementChange(this._explorerComponentImagesSelectElement = explorerComponentImagesSelectElement);
     };
-    public get selectedElement(): ExplorerImplementation | undefined {
-        return this._selectedElement;
+    public get explorerComponentImagesSelectElement(): ExplorerImplementation | undefined {
+        return this._explorerComponentImagesSelectElement;
     };
 
     private _optionDraw?: { x: number; y: number; w: number; h: number; }[];

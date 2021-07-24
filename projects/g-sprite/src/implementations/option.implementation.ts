@@ -11,9 +11,36 @@ export interface OptionImplementation {
     opened: boolean;
 }
 
-export interface OptionDataImplementation<O> {
+export interface OptionJSONImplementation {
+    location: string;
+    sprites: OptionDataImplementation<keyof OptionComponentDataTypeImplementation>;
+}
+
+export interface OptionDataImplementation<K extends keyof OptionComponentDataTypeImplementation> {
     [name: string]: {
-        type: string;
-        data: O;
+        type: K;
+        data: OptionComponentDataTypeImplementation[K];
     };
 }
+
+export interface OptionComponentDataTypeImplementation {
+    'block': OptionBlockComponentDataType;
+    'array': OptionArrayComponentDataType;
+}
+
+export type OptionBlockComponentDataType = {
+    sprite_width: number;
+    sprite_height: number;
+    block_width: number;
+    block_height: number;
+    cells: {
+        [suffix: string]: number;
+    }
+};
+
+export type OptionArrayComponentDataType = {
+    sprite_width: number;
+    sprite_height: number;
+    block_width: number;
+    block_height: number;
+};

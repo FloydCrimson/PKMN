@@ -1,6 +1,9 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, Type, ViewChild } from '@angular/core';
 
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
+import { OptionJSONImplementation } from '../../implementations/option.implementation';
+import { ExplorerElementJSONsComponent } from '../explorer-element-jsons/explorer-element-jsons.component';
+import { ExplorerElementComponent } from '../explorer-element/explorer-element.component';
 import { ExplorerComponent } from '../explorer/explorer.component';
 import { OptionComponent } from '../option/option.component';
 
@@ -11,15 +14,29 @@ import { OptionComponent } from '../option/option.component';
 })
 export class GridComponent {
 
-  @ViewChild('explorerComponentAsset', { static: true }) public explorerComponentAsset?: ExplorerComponent;
+  public explorerElementComponent: Type<ExplorerImplementation> = ExplorerElementComponent;
+  public explorerElementJSONsComponent: Type<ExplorerImplementation> = ExplorerElementJSONsComponent;
+
+  @ViewChild('explorerComponentImages', { static: true }) public explorerComponentImages?: ExplorerComponent;
+  @ViewChild('explorerComponentJSONs', { static: true }) public explorerComponentJSONs?: ExplorerComponent;
   @ViewChild('optionComponent', { static: true }) public optionComponent?: OptionComponent;
 
-  public selectedElement?: ExplorerImplementation;
+  public explorerComponentImagesSelectElement?: ExplorerImplementation;
+  public explorerComponentJSONsSelectElement?: ExplorerImplementation;
+  public explorerComponentJSONsSelectSprite?: OptionJSONImplementation['sprites'];
 
   constructor() { }
 
-  public async onExplorerComponentAssetSelectElement(element?: ExplorerImplementation): Promise<void> {
-    this.selectedElement = element;
+  public onExplorerComponentImagesSelectElement(element?: ExplorerImplementation): void {
+    this.explorerComponentImagesSelectElement = element;
+  }
+
+  public onExplorerComponentJSONsSelectElement(element?: ExplorerImplementation): void {
+    this.explorerComponentJSONsSelectElement = element;
+  }
+
+  public onExplorerComponentJSONsSelectSprite(sprite?: OptionJSONImplementation['sprites']): void {
+    this.explorerComponentJSONsSelectSprite = sprite;
   }
 
 }

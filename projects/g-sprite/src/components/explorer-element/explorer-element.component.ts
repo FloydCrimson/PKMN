@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewContainerRef } from '@angular/core';
 import { ModulesService, FSModule } from '@node-cs/client';
 
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
@@ -14,14 +14,25 @@ export class ExplorerElementComponent implements ExplorerImplementation {
     @Input('name') public name?: string;
     @Input('type') public type?: 'directory' | 'file' | 'unknown' = 'unknown';
 
+    private _extensions?: string[];
+    @Input('extensions') public set extensions(extensions: string[] | undefined) {
+        this._extensions = extensions;
+        this.visible = this.isVisible();
+    };
+    public get extensions(): string[] | undefined {
+        return this._extensions;
+    }
+
     @Output('onSelectElement') public onSelectElementEmitter = new EventEmitter<ExplorerImplementation>();
 
     public elements?: { name: string; type: 'directory' | 'file' | 'unknown'; }[];
     public opened: boolean = false;
+    public visible: boolean = false;
     public selected: boolean = false;
 
     constructor(
-        private readonly modulesService: ModulesService
+        public readonly viewContainerRef: ViewContainerRef,
+        protected readonly modulesService: ModulesService
     ) { }
 
     public async onOpenOrCloseElement(): Promise<void> {
@@ -88,6 +99,18 @@ export class ExplorerElementComponent implements ExplorerImplementation {
     public getRootElement(): ExplorerImplementation | undefined {
         const parent = this.parent?.getRootElement();
         return parent ? parent : undefined;
+    }
+
+    //
+
+    private isVisible(): boolean {
+        if (this.type === 'file') {
+            if (this.extensions && this.extensions.length > 0) {
+                const extension = this.name?.split('.').pop()?.toLowerCase();
+                return extension ? this.extensions.includes(extension) : false;
+            }
+        }
+        return true;
     }
 
 }

@@ -1,13 +1,24 @@
-.explorer-element-component {
+.explorer-element-jsons-component {
   >span {
     margin-left: 10px;
   }
 
   >div.elements-container {
     margin-left: 10px;
+
+    >div.explorer-element-jsons-sprite-component {
+      margin-left: 25px;
+
+      &.state-selected {
+        >span.element-sprite {
+          background-color: yellow;
+        }
+      }
+    }
   }
 
-  &.type-directory {
+  &.type-directory,
+  &.type-file {
     &.state-opened {
       &>span.element-symbol {
         background-color: green;
