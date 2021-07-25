@@ -21,11 +21,14 @@ export class GridComponent {
   @ViewChild('explorerComponentJSONs', { static: true }) public explorerComponentJSONs?: ExplorerComponent;
   @ViewChild('optionComponent', { static: true }) public optionComponent?: OptionComponent;
 
+  public mode: 'sprite' | 'level' = 'sprite';
   public explorerComponentImagesSelectElement?: ExplorerImplementation;
   public explorerComponentJSONsSelectElement?: ExplorerImplementation;
   public explorerComponentJSONsSelectSprite?: OptionJSONImplementation['sprites'];
 
-  constructor() { }
+  public onChangeModeClick(mode: 'sprite' | 'level'): void {
+    this.mode = mode;
+  }
 
   public onExplorerComponentImagesSelectElement(element?: ExplorerImplementation): void {
     this.explorerComponentImagesSelectElement = element;
