@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 
 import { ExplorerElementComponentModule } from '../explorer-element/explorer-element.component.module';
-import { ExplorerElementJSONsComponentModule } from '../explorer-element-jsons/explorer-element-jsons.component.module';
+import { ExplorerElementOptionComponentModule } from '../explorer-element-option/explorer-element-option.component.module';
 
 import { ExplorerComponent } from './explorer.component';
 
 @NgModule({
   imports: [
     ExplorerElementComponentModule,
-    ExplorerElementJSONsComponentModule
+    ExplorerElementOptionComponentModule
   ],
   declarations: [
     ExplorerComponent

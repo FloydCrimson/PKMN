@@ -4,11 +4,11 @@ import { OptionComponentDataTypeImplementation, OptionJSONImplementation } from 
 import { ExplorerElementComponent } from '../explorer-element/explorer-element.component';
 
 @Component({
-    selector: 'explorer-element-jsons-component',
-    templateUrl: './explorer-element-jsons.component.html',
-    styleUrls: ['./explorer-element-jsons.component.scss']
+    selector: 'explorer-element-option-component',
+    templateUrl: './explorer-element-option.component.html',
+    styleUrls: ['./explorer-element-option.component.scss']
 })
-export class ExplorerElementJSONsComponent extends ExplorerElementComponent {
+export class ExplorerElementOptionComponent extends ExplorerElementComponent {
 
     @Output('onSelectSprite') public onSelectSpriteEmitter = new EventEmitter<OptionJSONImplementation['sprites']>();
 
@@ -29,7 +29,7 @@ export class ExplorerElementJSONsComponent extends ExplorerElementComponent {
         } else if (this.type === 'file') {
             const path = this.getPath();
             if (!path) {
-                throw new Error('ExplorerElementJSONsComponent.updateElement => Unable to update element: "path" is undefined.');
+                throw new Error('ExplorerElementOptionComponent.updateElement => Unable to update element: "path" is undefined.');
             }
             if (force) {
                 this.elements = undefined;

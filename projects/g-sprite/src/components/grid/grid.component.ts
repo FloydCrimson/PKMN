@@ -2,7 +2,7 @@ import { Component, Type, ViewChild } from '@angular/core';
 
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
 import { OptionJSONImplementation } from '../../implementations/option.implementation';
-import { ExplorerElementJSONsComponent } from '../explorer-element-jsons/explorer-element-jsons.component';
+import { ExplorerElementOptionComponent } from '../explorer-element-option/explorer-element-option.component';
 import { ExplorerElementComponent } from '../explorer-element/explorer-element.component';
 import { ExplorerComponent } from '../explorer/explorer.component';
 import { OptionComponent } from '../option/option.component';
@@ -15,7 +15,7 @@ import { OptionComponent } from '../option/option.component';
 export class GridComponent {
 
   public explorerElementComponent: Type<ExplorerImplementation> = ExplorerElementComponent;
-  public explorerElementJSONsComponent: Type<ExplorerImplementation> = ExplorerElementJSONsComponent;
+  public explorerElementJSONsComponent: Type<ExplorerImplementation> = ExplorerElementOptionComponent;
 
   @ViewChild('explorerComponentImages', { static: true }) public explorerComponentImages?: ExplorerComponent;
   @ViewChild('explorerComponentJSONs', { static: true }) public explorerComponentJSONs?: ExplorerComponent;

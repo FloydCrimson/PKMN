@@ -2,7 +2,7 @@ import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Outpu
 
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
 import { OptionJSONImplementation } from '../../implementations/option.implementation';
-import { ExplorerElementJSONsComponent } from '../explorer-element-jsons/explorer-element-jsons.component';
+import { ExplorerElementOptionComponent } from '../explorer-element-option/explorer-element-option.component';
 
 @Component({
     selector: 'explorer-component',
@@ -41,7 +41,7 @@ export class ExplorerComponent implements ExplorerImplementation, OnInit {
             componentRef.instance.type = this.type;
             componentRef.instance.extensions = this.extensions;
             componentRef.instance.onSelectElementEmitter.subscribe(this.onSelectElement.bind(this));
-            if (componentRef.instance instanceof ExplorerElementJSONsComponent) {
+            if (componentRef.instance instanceof ExplorerElementOptionComponent) {
                 componentRef.instance.onSelectSpriteEmitter.subscribe(this.onSelectSprite.bind(this));
             }
             this.element = componentRef.instance;
