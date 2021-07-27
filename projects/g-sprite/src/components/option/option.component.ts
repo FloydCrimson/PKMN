@@ -1,7 +1,7 @@
 import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { ModulesService } from '@node-cs/client';
 
-import { OptionImplementation, OptionJSONImplementation } from '../../implementations/option.implementation';
+import { OptionComponentImplementation, OptionDataImplementation } from '../../implementations/option.implementation';
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
 
 @Component({
@@ -12,19 +12,19 @@ import { ExplorerImplementation } from '../../implementations/explorer.implement
 export class OptionComponent {
 
     @Input('explorerComponentImagesSelectElement') public explorerComponentImagesSelectElement?: ExplorerImplementation;
-    @Input('explorerComponentJSONsSelectElement') public explorerComponentJSONsSelectElement?: ExplorerImplementation;
-    @Input('explorerComponentJSONsSelectSprite') public explorerComponentJSONsSelectSprite?: OptionJSONImplementation['sprites'];
+    @Input('explorerComponentOptionSelectElement') public explorerComponentOptionSelectElement?: ExplorerImplementation;
+    @Input('explorerComponentOptionSelectSprite') public explorerComponentOptionSelectSprite?: OptionDataImplementation['sprites'];
 
-    @ViewChildren('block') public options?: QueryList<OptionImplementation>;
+    @ViewChildren('block') public options?: QueryList<OptionComponentImplementation>;
 
-    public optionData?: OptionJSONImplementation['sprites'];
+    public optionData?: OptionDataImplementation['sprites'];
     public optionDraw?: { x: number; y: number; w: number; h: number; }[];
 
     constructor(
         private readonly modulesService: ModulesService
     ) { }
 
-    public onOpenOrCloseOption(option: OptionImplementation): void {
+    public onOpenOrCloseOption(option: OptionComponentImplementation): void {
         const array = this.options?.toArray();
         if (array) {
             const position = array.indexOf(option);
@@ -42,7 +42,7 @@ export class OptionComponent {
             const location = imagePath.replace(rootPath + '/images', '');
             const jsonPath = rootPath.replace('/projects/game/', '/projects/g-sprite/') + '/images' + location.split('.').slice(0, -1).join('') + '.json';
             const exists = await this.modulesService.getMethod('fs', 'access')(jsonPath, 'F_OK').then(_ => true).catch(_ => false);
-            const json: OptionJSONImplementation = exists ?
+            const json: OptionDataImplementation = exists ?
                 JSON.parse(await this.modulesService.getMethod('fs', 'readFile')(jsonPath, { encoding: 'utf8' })) :
                 { location, sprites: {} };
             if (await this.showConfirmDialog(json.sprites, this.optionData!)) {
@@ -53,7 +53,7 @@ export class OptionComponent {
         }
     }
 
-    public onOptionDataChange(optionData: OptionJSONImplementation['sprites']): void {
+    public onOptionDataChange(optionData: OptionDataImplementation['sprites']): void {
         this.optionData = optionData;
     }
 
@@ -63,7 +63,7 @@ export class OptionComponent {
 
     //
 
-    private async showConfirmDialog(optionDataSaved: OptionJSONImplementation['sprites'], optionDataNew: OptionJSONImplementation['sprites']): Promise<boolean> {
+    private async showConfirmDialog(optionDataSaved: OptionDataImplementation['sprites'], optionDataNew: OptionDataImplementation['sprites']): Promise<boolean> {
         const keys = optionDataNew ? Object.keys(optionDataNew) : [];
         if (keys.length !== 1) {
             return false;

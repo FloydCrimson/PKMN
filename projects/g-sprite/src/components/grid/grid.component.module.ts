@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { ExplorerComponentModule } from '../explorer/explorer.component.module';
 import { OptionComponentModule } from '../option/option.component.module';
+import { LevelComponentModule } from '../level/level.component.module';
 
 import { GridComponent } from './grid.component';
 
@@ -10,7 +11,8 @@ import { GridComponent } from './grid.component';
   imports: [
     CommonModule,
     ExplorerComponentModule,
-    OptionComponentModule
+    OptionComponentModule,
+    LevelComponentModule
   ],
   declarations: [
     GridComponent

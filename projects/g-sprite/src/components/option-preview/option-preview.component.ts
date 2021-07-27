@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { OptionDataImplementation } from '../../implementations/option.implementation';
+import { OptionDataSpritesImplementation } from '../../implementations/option.implementation';
 
 @Component({
     selector: 'option-preview-component',
@@ -9,7 +9,7 @@ import { OptionDataImplementation } from '../../implementations/option.implement
 })
 export class OptionPreviewComponent {
 
-    @Input('optionData') public set optionData(optionData: OptionDataImplementation<any> | undefined) {
+    @Input('optionData') public set optionData(optionData: OptionDataSpritesImplementation<any> | undefined) {
         if (optionData) {
             try {
                 this.preview = JSON.stringify(optionData, null, '   ');

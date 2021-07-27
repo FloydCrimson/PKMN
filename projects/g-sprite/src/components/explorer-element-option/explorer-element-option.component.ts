@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { OptionComponentDataTypeImplementation, OptionJSONImplementation } from '../../implementations/option.implementation';
+import { OptionDataSpritesTypeImplementation, OptionDataImplementation } from '../../implementations/option.implementation';
 
 import { ExplorerElementComponent } from '../explorer-element/explorer-element.component';
 
@@ -10,7 +10,7 @@ import { ExplorerElementComponent } from '../explorer-element/explorer-element.c
 })
 export class ExplorerElementOptionComponent extends ExplorerElementComponent {
 
-    @Output('onSelectSprite') public onSelectSpriteEmitter = new EventEmitter<OptionJSONImplementation['sprites']>();
+    @Output('onSelectSprite') public onSelectSpriteEmitter = new EventEmitter<OptionDataImplementation['sprites']>();
 
     public sprites?: SpriteUI[];
 
@@ -38,7 +38,7 @@ export class ExplorerElementOptionComponent extends ExplorerElementComponent {
             }
             if (!this.sprites) {
                 this.sprites = [];
-                const json: OptionJSONImplementation = JSON.parse(await this.modulesService.getMethod('fs', 'readFile')(path, { encoding: 'utf8' }));
+                const json: OptionDataImplementation = JSON.parse(await this.modulesService.getMethod('fs', 'readFile')(path, { encoding: 'utf8' }));
                 for (const name in json.sprites) {
                     const optionData = json.sprites[name];
                     this.sprites.push({ name, type: optionData.type, data: optionData.data, selected: false });
@@ -47,7 +47,7 @@ export class ExplorerElementOptionComponent extends ExplorerElementComponent {
         }
     }
 
-    public onSelectSprite(sprite?: OptionJSONImplementation['sprites']): void {
+    public onSelectSprite(sprite?: OptionDataImplementation['sprites']): void {
         this.onSelectSpriteEmitter.emit(sprite);
     }
 
@@ -59,9 +59,9 @@ export class ExplorerElementOptionComponent extends ExplorerElementComponent {
 
 }
 
-type SpriteUI<K extends keyof OptionComponentDataTypeImplementation = keyof OptionComponentDataTypeImplementation> = {
+type SpriteUI<K extends keyof OptionDataSpritesTypeImplementation = keyof OptionDataSpritesTypeImplementation> = {
     name: string;
     type: K;
-    data: OptionComponentDataTypeImplementation[K];
+    data: OptionDataSpritesTypeImplementation[K];
     selected: boolean;
 };

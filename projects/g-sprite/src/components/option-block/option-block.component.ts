@@ -1,41 +1,41 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { OptionBlockComponentDataType, OptionDataImplementation, OptionImplementation, OptionJSONImplementation } from '../../implementations/option.implementation';
+import { OptionDataSpritesBlockType, OptionDataSpritesImplementation, OptionComponentImplementation, OptionDataImplementation } from '../../implementations/option.implementation';
 
 @Component({
     selector: 'option-block-component',
     templateUrl: './option-block.component.html',
     styleUrls: ['./option-block.component.scss']
 })
-export class OptionBlockComponent implements OptionImplementation {
+export class OptionBlockComponent implements OptionComponentImplementation {
 
-    private _explorerComponentJSONsSelectSprite?: OptionJSONImplementation['sprites'];
-    @Input('explorerComponentJSONsSelectSprite') public set explorerComponentJSONsSelectSprite(explorerComponentJSONsSelectSprite: OptionJSONImplementation['sprites'] | undefined) {
-        this._explorerComponentJSONsSelectSprite = explorerComponentJSONsSelectSprite;
-        if (this._explorerComponentJSONsSelectSprite) {
-            this.name = Object.keys(this._explorerComponentJSONsSelectSprite).pop()!;
-            const sprite = this._explorerComponentJSONsSelectSprite[this.name];
+    private _explorerComponentOptionSelectSprite?: OptionDataImplementation['sprites'];
+    @Input('explorerComponentOptionSelectSprite') public set explorerComponentOptionSelectSprite(explorerComponentOptionSelectSprite: OptionDataImplementation['sprites'] | undefined) {
+        this._explorerComponentOptionSelectSprite = explorerComponentOptionSelectSprite;
+        if (this._explorerComponentOptionSelectSprite) {
+            this.name = Object.keys(this._explorerComponentOptionSelectSprite).pop()!;
+            const sprite = this._explorerComponentOptionSelectSprite[this.name];
             if (sprite.type === 'block') {
-                this.optionUI = this.initialize(sprite.data as OptionBlockComponentDataType);
+                this.optionUI = this.initialize(sprite.data as OptionDataSpritesBlockType);
                 this.update();
             }
         }
     };
-    public get explorerComponentJSONsSelectSprite(): OptionJSONImplementation['sprites'] | undefined {
-        return this._explorerComponentJSONsSelectSprite;
+    public get explorerComponentOptionSelectSprite(): OptionDataImplementation['sprites'] | undefined {
+        return this._explorerComponentOptionSelectSprite;
     };
 
-    @Output('onOpenOrCloseOption') public onOpenOrCloseOptionEmitter = new EventEmitter<OptionImplementation>();
+    @Output('onOpenOrCloseOption') public onOpenOrCloseOptionEmitter = new EventEmitter<OptionComponentImplementation>();
     @Output('onSaveOption') public onSaveOptionEmitter = new EventEmitter();
-    @Output('onOptionDataChange') public onOptionDataChangeEmitter = new EventEmitter<OptionDataImplementation<'block'>>();
+    @Output('onOptionDataChange') public onOptionDataChangeEmitter = new EventEmitter<OptionDataSpritesImplementation<'block'>>();
     @Output('onOptionDrawChange') public onOptionDrawChangeEmitter = new EventEmitter<{ x: number; y: number; w: number; h: number; }[]>();
 
     public opened: boolean = true;
     public error: string = '';
     public name: string = '';
-    public optionUI: OptionBlockComponentUIType = this.initialize();
+    public optionUI: OptionDataSpritesBlockUIType = this.initialize();
 
-    private option?: OptionBlockComponentDataType;
+    private option?: OptionDataSpritesBlockType;
 
     constructor() {
         this.update();
@@ -51,7 +51,7 @@ export class OptionBlockComponent implements OptionImplementation {
 
     //
 
-    private initialize(data?: OptionBlockComponentDataType): OptionBlockComponentUIType {
+    private initialize(data?: OptionDataSpritesBlockType): OptionDataSpritesBlockUIType {
         if (data) {
             return {
                 sprite_width: data.sprite_width.toString(),
@@ -117,10 +117,6 @@ export class OptionBlockComponent implements OptionImplementation {
             this.error = '"block_height" must be more or equal than 1.';
             return;
         }
-        if (!block_height || block_height < 1) {
-            this.error = '"block_height" must be more or equal than 1.';
-            return;
-        }
         const length = block_width * block_height;
         if (length > this.optionUI.cells.length) {
             for (let i = this.optionUI.cells.length; i < length; i++) {
@@ -144,7 +140,7 @@ export class OptionBlockComponent implements OptionImplementation {
             sprite_height,
             block_width,
             block_height,
-            cells: cells.reduce<OptionBlockComponentDataType['cells']>((pv, cv, i) => {
+            cells: cells.reduce<OptionDataSpritesBlockType['cells']>((pv, cv, i) => {
                 if (cv.suffix.length > 0) {
                     pv[cv.suffix] = i;
                 }
@@ -167,7 +163,7 @@ export class OptionBlockComponent implements OptionImplementation {
 
 }
 
-type OptionBlockComponentUIType = {
+type OptionDataSpritesBlockUIType = {
     sprite_width: string;
     sprite_height: string;
     block_width: string;

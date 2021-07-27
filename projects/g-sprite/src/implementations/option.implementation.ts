@@ -1,34 +1,31 @@
 import { EventEmitter } from '@angular/core';
 
-import { ExplorerImplementation } from './explorer.implementation';
-
-export interface OptionImplementation {
-    /** @Input */ selectedElement?: ExplorerImplementation;
-    /** @Output */ onOpenOrCloseOptionEmitter: EventEmitter<OptionImplementation>;
+export interface OptionComponentImplementation {
+    /** @Output */ onOpenOrCloseOptionEmitter: EventEmitter<OptionComponentImplementation>;
     /** @Output */ onSaveOptionEmitter: EventEmitter<void>;
-    /** @Output */ onOptionDataChangeEmitter: EventEmitter<OptionDataImplementation<any>>;
+    /** @Output */ onOptionDataChangeEmitter: EventEmitter<OptionDataSpritesImplementation<any>>;
     /** @Output */ onOptionDrawChangeEmitter: EventEmitter<{ x: number; y: number; w: number; h: number; }[]>;
     opened: boolean;
 }
 
-export interface OptionJSONImplementation {
+export interface OptionDataImplementation {
     location: string;
-    sprites: OptionDataImplementation<keyof OptionComponentDataTypeImplementation>;
+    sprites: OptionDataSpritesImplementation<keyof OptionDataSpritesTypeImplementation>;
 }
 
-export interface OptionDataImplementation<K extends keyof OptionComponentDataTypeImplementation> {
+export interface OptionDataSpritesImplementation<K extends keyof OptionDataSpritesTypeImplementation> {
     [name: string]: {
         type: K;
-        data: OptionComponentDataTypeImplementation[K];
+        data: OptionDataSpritesTypeImplementation[K];
     };
 }
 
-export interface OptionComponentDataTypeImplementation {
-    'block': OptionBlockComponentDataType;
-    'array': OptionArrayComponentDataType;
+export interface OptionDataSpritesTypeImplementation {
+    'block': OptionDataSpritesBlockType;
+    'array': OptionDataSpritesArrayType;
 }
 
-export type OptionBlockComponentDataType = {
+export type OptionDataSpritesBlockType = {
     sprite_width: number;
     sprite_height: number;
     block_width: number;
@@ -38,7 +35,7 @@ export type OptionBlockComponentDataType = {
     }
 };
 
-export type OptionArrayComponentDataType = {
+export type OptionDataSpritesArrayType = {
     sprite_width: number;
     sprite_height: number;
     block_width: number;

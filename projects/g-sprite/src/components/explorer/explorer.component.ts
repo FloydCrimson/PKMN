@@ -1,7 +1,7 @@
 import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, Type, ViewChild } from '@angular/core';
 
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
-import { OptionJSONImplementation } from '../../implementations/option.implementation';
+import { OptionDataImplementation } from '../../implementations/option.implementation';
 import { ExplorerElementOptionComponent } from '../explorer-element-option/explorer-element-option.component';
 
 @Component({
@@ -17,7 +17,7 @@ export class ExplorerComponent implements ExplorerImplementation, OnInit {
     @Input('extensions') public extensions?: string[];
 
     @Output('onSelectElement') public onSelectElementEmitter = new EventEmitter<ExplorerImplementation>();
-    @Output('onSelectSprite') public onSelectSpriteEmitter = new EventEmitter<OptionJSONImplementation['sprites']>();
+    @Output('onSelectSprite') public onSelectSpriteEmitter = new EventEmitter<OptionDataImplementation['sprites']>();
 
     @ViewChild('element', { static: true }) public element!: ExplorerImplementation;
 
@@ -60,7 +60,7 @@ export class ExplorerComponent implements ExplorerImplementation, OnInit {
         this.onSelectElementEmitter.emit(this.selectedElement = element);
     }
 
-    public onSelectSprite(sprite?: OptionJSONImplementation['sprites']): void {
+    public onSelectSprite(sprite?: OptionDataImplementation['sprites']): void {
         this.onSelectSpriteEmitter.emit(sprite);
     }
 

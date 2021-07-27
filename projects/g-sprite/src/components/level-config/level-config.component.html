@@ -1,0 +1,9 @@
+<div class="level-config-container">
+    <button class="button-save" [disabled]="error" (click)="onSaveLevel()">Save</button>
+    <label><span>name</span><input type="text" [(ngModel)]="name" (ngModelChange)="update()"></label>
+    <label><span>sprite_width</span><input type="number" [(ngModel)]="levelUI.config.sprite_width" (ngModelChange)="update()"></label>
+    <label><span>sprite_height</span><input type="number" [(ngModel)]="levelUI.config.sprite_height" (ngModelChange)="update()"></label>
+    <label><span>level_width</span><input type="number" [(ngModel)]="levelUI.config.level_width" (ngModelChange)="update()"></label>
+    <label><span>level_height</span><input type="number" [(ngModel)]="levelUI.config.level_height" (ngModelChange)="update()"></label>
+    <span class="error">{{ error }}</span>
+</div>

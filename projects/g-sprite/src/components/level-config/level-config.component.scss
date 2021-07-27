@@ -1,0 +1,23 @@
+.level-config-container {
+  display: grid;
+
+  >label {
+    display: inline-flex;
+
+    >span {
+      flex-grow: 1;
+
+      &.state-selected {
+        background-color: yellow;
+      }
+    }
+
+    >input {
+      flex-basis: calc(100% - 150px);
+    }
+  }
+
+  >span.error {
+    color: red;
+  }
+}
