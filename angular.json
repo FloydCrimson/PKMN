@@ -26,10 +26,6 @@
             "polyfills": "projects/g-sprite/src/polyfills.ts",
             "tsConfig": "projects/g-sprite/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/g-sprite/src/favicon.ico",
-              "projects/g-sprite/src/assets"
-            ],
             "styles": [
               "projects/g-sprite/src/styles.scss"
             ],
@@ -94,10 +90,6 @@
             "tsConfig": "projects/g-sprite/tsconfig.spec.json",
             "karmaConfig": "projects/g-sprite/karma.conf.js",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/g-sprite/src/favicon.ico",
-              "projects/g-sprite/src/assets"
-            ],
             "styles": [
               "projects/g-sprite/src/styles.scss"
             ],

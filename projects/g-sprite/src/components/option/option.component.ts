@@ -40,14 +40,16 @@ export class OptionComponent {
         const rootPath = this.explorerComponentImagesSelectElement?.getRootElement()?.getPath();
         if (imagePath && rootPath) {
             const location = imagePath.replace(rootPath + '/images', '');
-            const jsonPath = rootPath + '/jsons' + location.split('.').slice(0, -1).join('') + '.json';
+            const jsonPath = rootPath.replace('/projects/game/', '/projects/g-sprite/') + '/images' + location.split('.').slice(0, -1).join('') + '.json';
             const exists = await this.modulesService.getMethod('fs', 'access')(jsonPath, 'F_OK').then(_ => true).catch(_ => false);
             const json: OptionJSONImplementation = exists ?
                 JSON.parse(await this.modulesService.getMethod('fs', 'readFile')(jsonPath, { encoding: 'utf8' })) :
                 { location, sprites: {} };
-            Object.assign(json.sprites, this.optionData);
-            const saved = await this.modulesService.getMethod('fs', 'writeFile')(jsonPath, JSON.stringify(json, undefined, '\t'), { encoding: 'utf8' }).then(_ => true).catch(_ => false);
-            console.log(exists, saved, json);
+            if (await this.showConfirmDialog(json.sprites, this.optionData!)) {
+                Object.assign(json.sprites, this.optionData);
+                const saved = await this.modulesService.getMethod('fs', 'writeFile')(jsonPath, JSON.stringify(json, undefined, '\t'), { encoding: 'utf8' }).then(_ => true).catch(_ => false);
+                alert(saved ? 'Data saved.' : 'Data not saved.');
+            }
         }
     }
 
@@ -57,6 +59,16 @@ export class OptionComponent {
 
     public onOptionDrawChange(optionDraw?: { x: number; y: number; w: number; h: number; }[]): void {
         this.optionDraw = optionDraw;
+    }
+
+    //
+
+    private async showConfirmDialog(optionDataSaved: OptionJSONImplementation['sprites'], optionDataNew: OptionJSONImplementation['sprites']): Promise<boolean> {
+        const keys = optionDataNew ? Object.keys(optionDataNew) : [];
+        if (keys.length !== 1) {
+            return false;
+        }
+        return (keys[0] in optionDataSaved) ? window.confirm('Data "' + keys[0] + '" already saved. Overwrite?') : true;
     }
 
 }
