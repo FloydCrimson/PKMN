@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { LevelDataType, LevelComponentImplementation } from '../../implementations/level.implementation';
 
@@ -9,11 +9,22 @@ import { LevelDataType, LevelComponentImplementation } from '../../implementatio
 })
 export class LevelConfigComponent implements LevelComponentImplementation {
 
+    private _cellsSelected: { x: number; y: number; }[] = [];
+    @Input('cellsSelected') public set cellsSelected(cellsSelected: { x: number; y: number; }[] | undefined) {
+        this.onCellsSelectedChange(this._cellsSelected = cellsSelected || []);
+    };
+    public get cellsSelected(): { x: number; y: number; }[] {
+        return this._cellsSelected;
+    };
+
     @Output('onSaveLevel') public onSaveLevelEmitter = new EventEmitter();
+    @Output('onLevelDataChange') public onLevelDataChangeEmitter = new EventEmitter<LevelDataType>();
 
     public error: string = '';
     public name: string = '';
     public levelUI: LevelDataUIType = this.initialize();
+
+    private level?: LevelDataType;
 
     constructor() {
         this.update();
@@ -49,6 +60,10 @@ export class LevelConfigComponent implements LevelComponentImplementation {
         }
     }
 
+    private onCellsSelectedChange(cellsSelected: { x: number; y: number; }[]): void {
+        console.log('onCellsSelectedChange', cellsSelected);
+    }
+
     public update(): void {
         // Parse
         const name = this.name.trim();
@@ -78,6 +93,17 @@ export class LevelConfigComponent implements LevelComponentImplementation {
             return;
         }
         this.error = '';
+        // LevelData
+        this.level = {
+            config: {
+                sprite_width,
+                sprite_height,
+                level_width,
+                level_height
+            },
+            matrix: [[{}]]
+        };
+        this.onLevelDataChangeEmitter.emit(this.level);
     }
 
 }

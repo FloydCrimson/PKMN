@@ -1,8 +1,8 @@
 <div class="level-container">
     <div class="level-left">
-
+        <level-canvas-component [levelData]="levelData" (onCanvasMatrixSelection)="onCanvasMatrixSelection($event)"></level-canvas-component>
     </div>
     <div class="level-right">
-        <level-config-component></level-config-component>
+        <level-config-component [cellsSelected]="cellsSelected" (onLevelDataChange)="onLevelDataChange($event)"></level-config-component>
     </div>
 </div>

@@ -2,6 +2,7 @@ import { EventEmitter } from '@angular/core';
 
 export interface LevelComponentImplementation {
     /** @Output */ onSaveLevelEmitter: EventEmitter<void>;
+    /** @Output */ onLevelDataChangeEmitter: EventEmitter<LevelDataType>;
 }
 
 export type LevelDataType = {
