@@ -1,7 +1,7 @@
 {
 	"location": "/terrain/grass-alpha.png",
 	"sprites": {
-		"base": {
+		"Base": {
 			"type": "block",
 			"data": {
 				"sprite_width": 32,
@@ -9,16 +9,16 @@
 				"block_width": 3,
 				"block_height": 4,
 				"cells": {
-					"full": 0,
-					"top_left": 3,
-					"top_middle": 4,
-					"top_right": 5,
-					"center_left": 6,
-					"center_middle": 7,
-					"center_right": 8,
-					"bottom_left": 9,
-					"bottom_middle": 10,
-					"bottom_right": 11
+					"Full": 0,
+					"TopLeft": 3,
+					"TopMiddle": 4,
+					"TopRight": 5,
+					"CenterLeft": 6,
+					"CenterMiddle": 7,
+					"CenterRight": 8,
+					"BottomLeft": 9,
+					"BottomMiddle": 10,
+					"BottomRight": 11
 				}
 			}
 		}
