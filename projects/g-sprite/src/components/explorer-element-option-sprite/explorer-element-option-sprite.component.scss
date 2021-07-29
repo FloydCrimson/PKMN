@@ -1,4 +1,4 @@
-.explorer-element-option-component {
+.explorer-element-option-sprite-component {
   >span {
     margin-left: 10px;
   }
@@ -12,6 +12,16 @@
       &.state-selected {
         >span.element-sprite {
           background-color: yellow;
+        }
+      }
+
+      >div.explorer-element-option-image {
+        margin-left: 25px;
+
+        &.state-selected {
+          >span.element-sprite {
+            background-color: yellow;
+          }
         }
       }
     }

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
-import { LevelDataType } from '../../implementations/level.implementation';
+import { LevelDataType, LevelImageType } from '../../implementations/level.implementation';
 
 @Component({
     selector: 'level-component',
@@ -8,6 +8,8 @@ import { LevelDataType } from '../../implementations/level.implementation';
     styleUrls: ['./level.component.scss']
 })
 export class LevelComponent {
+
+    @Input('explorerComponentOptionSpritesSelectImage') public explorerComponentOptionSpritesSelectImage?: LevelImageType;
 
     public levelData?: LevelDataType;
     public cellsSelected: { x: number; y: number; }[] = [];

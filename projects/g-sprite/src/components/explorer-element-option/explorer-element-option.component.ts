@@ -53,7 +53,7 @@ export class ExplorerElementOptionComponent extends ExplorerElementComponent {
 
     public onSelectSpriteUI(sprite: SpriteUI): void {
         const position = this.sprites!.indexOf(sprite);
-        this.sprites!.forEach((sprite, index) => sprite.selected = index === position ? !sprite.selected : false);
+        this.sprites!.forEach((sprite, index) => sprite.selected = (index === position) ? !sprite.selected : false);
         this.onSelectSprite(sprite.selected ? { [sprite.name]: { type: sprite.type, data: sprite.data } } : undefined);
     }
 

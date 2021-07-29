@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { LevelDataType, LevelComponentImplementation } from '../../implementations/level.implementation';
+import { LevelDataType, LevelComponentImplementation, LevelImageType } from '../../implementations/level.implementation';
 
 @Component({
     selector: 'level-config-component',
@@ -15,6 +15,14 @@ export class LevelConfigComponent implements LevelComponentImplementation {
     };
     public get cellsSelected(): { x: number; y: number; }[] {
         return this._cellsSelected;
+    };
+
+    private _explorerComponentOptionSpritesSelectImage?: LevelImageType;
+    @Input('explorerComponentOptionSpritesSelectImage') public set explorerComponentOptionSpritesSelectImage(explorerComponentOptionSpritesSelectImage: LevelImageType | undefined) {
+        this.onImageSelectedChange(this._explorerComponentOptionSpritesSelectImage = explorerComponentOptionSpritesSelectImage);
+    };
+    public get explorerComponentOptionSpritesSelectImage(): LevelImageType | undefined {
+        return this._explorerComponentOptionSpritesSelectImage;
     };
 
     @Output('onSaveLevel') public onSaveLevelEmitter = new EventEmitter();
@@ -62,6 +70,10 @@ export class LevelConfigComponent implements LevelComponentImplementation {
 
     private onCellsSelectedChange(cellsSelected: { x: number; y: number; }[]): void {
         console.log('onCellsSelectedChange', cellsSelected);
+    }
+
+    private onImageSelectedChange(explorerComponentOptionSpritesSelectImage?: LevelImageType): void {
+        console.log('onImageSelectedChange', explorerComponentOptionSpritesSelectImage);
     }
 
     public update(): void {

@@ -3,6 +3,8 @@ import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Outpu
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
 import { OptionDataImplementation } from '../../implementations/option.implementation';
 import { ExplorerElementOptionComponent } from '../explorer-element-option/explorer-element-option.component';
+import { ExplorerElementOptionSpriteComponent } from '../explorer-element-option-sprite/explorer-element-option-sprite.component';
+import { LevelImageType } from '../../implementations/level.implementation';
 
 @Component({
     selector: 'explorer-component',
@@ -18,6 +20,7 @@ export class ExplorerComponent implements ExplorerImplementation, OnInit {
 
     @Output('onSelectElement') public onSelectElementEmitter = new EventEmitter<ExplorerImplementation>();
     @Output('onSelectSprite') public onSelectSpriteEmitter = new EventEmitter<OptionDataImplementation['sprites']>();
+    @Output('onSelectImage') public onSelectImageEmitter = new EventEmitter<LevelImageType>();
 
     @ViewChild('element', { static: true }) public element!: ExplorerImplementation;
 
@@ -44,6 +47,9 @@ export class ExplorerComponent implements ExplorerImplementation, OnInit {
             if (componentRef.instance instanceof ExplorerElementOptionComponent) {
                 componentRef.instance.onSelectSpriteEmitter.subscribe(this.onSelectSprite.bind(this));
             }
+            if (componentRef.instance instanceof ExplorerElementOptionSpriteComponent) {
+                componentRef.instance.onSelectImageEmitter.subscribe(this.onSelectImage.bind(this));
+            }
             this.element = componentRef.instance;
         }
     }
@@ -62,6 +68,10 @@ export class ExplorerComponent implements ExplorerImplementation, OnInit {
 
     public onSelectSprite(sprite?: OptionDataImplementation['sprites']): void {
         this.onSelectSpriteEmitter.emit(sprite);
+    }
+
+    public onSelectImage(data?: LevelImageType): void {
+        this.onSelectImageEmitter.emit(data);
     }
 
     public getPath(): string | undefined {

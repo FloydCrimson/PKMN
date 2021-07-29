@@ -3,7 +3,7 @@
     <span class="element-name" (click)="onSelectElement(this)">{{ name }}</span>
     <div class="elements-container">
         <explorer-element-option-component *ngFor="let element of elements" [parent]="this" [name]="element.name" [type]="element.type" [extensions]="extensions" (onSelectElement)="onSelectElement($event)" (onSelectSprite)="onSelectSprite($event)"></explorer-element-option-component>
-        <div *ngFor="let sprite of sprites" class="explorer-element-option-sprite-component" [ngClass]="{ 'state-selected': sprite.selected, 'state-deselected': !sprite.selected }">
+        <div *ngFor="let sprite of sprites" class="explorer-element-option-sprite" [ngClass]="{ 'state-selected': sprite.selected, 'state-deselected': !sprite.selected }">
             <span class="element-sprite" (click)="onSelectSpriteUI(sprite)">{{ '[' + sprite.type + '] - ' + sprite.name }}</span>
         </div>
     </div>

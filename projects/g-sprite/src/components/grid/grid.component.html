@@ -13,9 +13,9 @@
 </div>
 <div *ngIf="mode === 'level'" class="grid-container level">
   <div class="grid-left">
-
+    <explorer-component #explorerComponentOptionSprites [component]="explorerElementOptionSpritesComponent" [root]="'C:/Users/Floyd/OneDrive/Documenti/GitHub/PKMN/projects/g-sprite/src/assets'" [name]="'images'" [extensions]="['json']" (onSelectElement)="onExplorerComponentOptionSpritesSelectElement($event)" (onSelectImage)="onExplorerComponentOptionSpritesSelectImage($event)"></explorer-component>
   </div>
   <div class="grid-center-right">
-    <level-component #levelComponent></level-component>
+    <level-component #levelComponent [explorerComponentOptionSpritesSelectImage]="explorerComponentOptionSpritesSelectImage"></level-component>
   </div>
 </div>
