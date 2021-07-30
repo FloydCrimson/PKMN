@@ -65,7 +65,7 @@ export class ExplorerElementOptionSpriteComponent extends ExplorerElementCompone
         const position1 = this.sprites!.indexOf(sprite);
         const position2 = this.sprites![position1].images.indexOf(image);
         this.sprites!.forEach((sprite, index1) => sprite.images.forEach((image, index2) => image.selected = (index1 === position1) ? ((index2 === position2) ? !image.selected : false) : false));
-        this.onSelectImage(image.selected ? { option: this.option!, name: sprite.name, image: image.name } : undefined);
+        this.onSelectImage(image.selected ? { option: this.option!, name: sprite.name, image: image.name, id: this.option!.location + ':' + sprite.name + ':' + image.name } : undefined);
     }
 
 }

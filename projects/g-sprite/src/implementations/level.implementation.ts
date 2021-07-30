@@ -25,4 +25,5 @@ export type LevelImageType = {
     option: OptionDataImplementation;
     name: string;
     image: string;
+    id: string;
 };
