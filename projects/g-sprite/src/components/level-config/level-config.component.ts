@@ -88,6 +88,8 @@ export class LevelConfigComponent implements LevelComponentImplementation {
             } else {
                 this.inputsSelected = this.getImagesUI(21);
             }
+        } else {
+            this.inputsSelected = [];
         }
     }
 

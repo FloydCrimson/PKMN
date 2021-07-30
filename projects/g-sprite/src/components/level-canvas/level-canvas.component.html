@@ -1,3 +1,4 @@
 <div class="level-canvas-container">
     <canvas #canvas (mousedown)="onCanvasMouseDown($event)" (mouseup)="onCanvasMouseUp($event)"></canvas>
+    <label><input type="checkbox" [(ngModel)]="grid" (ngModelChange)="draw()">Grid</label>
 </div>

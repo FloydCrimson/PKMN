@@ -44,8 +44,29 @@ export class LevelCanvasComponent {
 
     public async onCanvasMouseUp(event: MouseEvent): Promise<void> {
         this.mouseEvent.up = event;
-        await this.draw();
-        this.onCanvasMatrixSelectionEmitter.emit(this.cellsSelected);
+        if (this.levelData && this.mouseEvent && this.mouseEvent.down && this.mouseEvent.up) {
+            const x1 = Math.floor(this.grid ? (this.mouseEvent.down.offsetX / (this.levelData.config.sprite_width + 1)) : (this.mouseEvent.down.offsetX / this.levelData.config.sprite_width));
+            const y1 = Math.floor(this.grid ? (this.mouseEvent.down.offsetY / (this.levelData.config.sprite_height + 1)) : (this.mouseEvent.down.offsetY / this.levelData.config.sprite_height));
+            const x2 = Math.floor(this.grid ? (this.mouseEvent.up.offsetX / (this.levelData.config.sprite_width + 1)) : (this.mouseEvent.up.offsetX / this.levelData.config.sprite_width));
+            const y2 = Math.floor(this.grid ? (this.mouseEvent.up.offsetY / (this.levelData.config.sprite_height + 1)) : (this.mouseEvent.up.offsetY / this.levelData.config.sprite_height));
+            const x_min = Math.min(x1, x2);
+            const x_max = Math.max(x1, x2);
+            const y_min = Math.min(y1, y2);
+            const y_max = Math.max(y1, y2);
+            const cellsSelected = [];
+            for (let x = x_min; x <= x_max; x++) {
+                for (let y = y_min; y <= y_max; y++) {
+                    cellsSelected.push({ x, y });
+                }
+            }
+            if (cellsSelected.length === 1 && this.cellsSelected.length === 1 && cellsSelected[0].x === this.cellsSelected[0].x && cellsSelected[0].y === this.cellsSelected[0].y) {
+                this.cellsSelected = [];
+            } else {
+                this.cellsSelected = cellsSelected;
+            }
+            await this.draw();
+            this.onCanvasMatrixSelectionEmitter.emit(this.cellsSelected);
+        }
     }
 
     public async onlevelDrawChange(levelDraw?: { x: number; y: number; images: { id: string; src: string; depth: number; }[]; }[]): Promise<void> {
@@ -54,7 +75,7 @@ export class LevelCanvasComponent {
 
     //
 
-    private async draw(): Promise<void> {
+    public async draw(): Promise<void> {
         const canvas = this.canvasElementRef?.nativeElement as HTMLCanvasElement;
         const context = canvas?.getContext('2d');
         if (this.levelData && canvas && context) {
@@ -65,28 +86,15 @@ export class LevelCanvasComponent {
             if (this.grid) {
                 canvas.width += this.levelData.config.level_width + 1;
                 canvas.height += this.levelData.config.level_height + 1;
-                context.beginPath();
-                context.globalAlpha = 0.5;
-                context.strokeStyle = 'red';
-                for (let x = 0; x <= this.levelData.config.level_width; x++) {
-                    context.moveTo(x * (this.levelData.config.sprite_width + 1) + 0.5, 0); // 0.5 for 1 px stroke
-                    context.lineTo(x * (this.levelData.config.sprite_width + 1) + 0.5, canvas.height); // 0.5 for 1 px stroke
-                    context.stroke();
-                }
-                for (let y = 0; y <= this.levelData.config.level_height; y++) {
-                    context.moveTo(0, y * (this.levelData.config.sprite_height + 1) + 0.5); // 0.5 for 1 px stroke
-                    context.lineTo(canvas.width, y * (this.levelData.config.sprite_height + 1) + 0.5); // 0.5 for 1 px stroke
-                    context.stroke();
-                }
-                context.closePath();
+                this.drawGrid(context, 0, 0, this.levelData.config.level_width, this.levelData.config.level_height, this.levelData.config.sprite_width, this.levelData.config.sprite_height, 'red', this.grid, false);
             }
             // Image
             if (this.levelDraw) {
                 context.beginPath();
                 context.globalAlpha = 1;
                 for (const draw of this.levelDraw) {
-                    const x = draw.x * this.levelData.config.sprite_width + draw.x + 1; // 0.5 for 1 px stroke
-                    const y = draw.y * this.levelData.config.sprite_height + draw.y + 1; // 0.5 for 1 px stroke
+                    const x = this.grid ? (draw.x * this.levelData.config.sprite_width + draw.x + 1) : (draw.x * this.levelData.config.sprite_width);
+                    const y = this.grid ? (draw.y * this.levelData.config.sprite_height + draw.y + 1) : (draw.y * this.levelData.config.sprite_height);
                     const width = this.levelData.config.sprite_width;
                     const height = this.levelData.config.sprite_height;
                     for (const { id, src } of draw.images.sort((i1, i2) => i1.depth - i2.depth)) {
@@ -97,28 +105,45 @@ export class LevelCanvasComponent {
                 context.closePath();
             }
             // Cells selection
-            if (this.mouseEvent && this.mouseEvent.down && this.mouseEvent.up) {
-                const x1 = Math.floor(this.grid ? (this.mouseEvent.down!.offsetX / (this.levelData.config.sprite_width + 1)) : (this.mouseEvent.down!.offsetX / this.levelData.config.sprite_width));
-                const y1 = Math.floor(this.grid ? (this.mouseEvent.down!.offsetY / (this.levelData.config.sprite_height + 1)) : (this.mouseEvent.down!.offsetY / this.levelData.config.sprite_height));
-                const x2 = Math.floor(this.grid ? (this.mouseEvent.up!.offsetX / (this.levelData.config.sprite_width + 1)) : (this.mouseEvent.up!.offsetX / this.levelData.config.sprite_width));
-                const y2 = Math.floor(this.grid ? (this.mouseEvent.up!.offsetY / (this.levelData.config.sprite_height + 1)) : (this.mouseEvent.up!.offsetY / this.levelData.config.sprite_height));
-                const x_min = Math.min(x1, x2);
-                const x_max = Math.max(x1, x2);
-                const y_min = Math.min(y1, y2);
-                const y_max = Math.max(y1, y2);
-                this.cellsSelected = [];
-                context.beginPath();
-                context.globalAlpha = 0.1;
-                context.strokeStyle = 'blue';
-                for (let x = x_min; x <= x_max; x++) {
-                    for (let y = y_min; y <= y_max; y++) {
-                        this.cellsSelected.push({ x, y });
-                        context.fillRect(x * (this.levelData.config.sprite_width + 1) + 0.5, y * (this.levelData.config.sprite_height + 1) + 0.5, this.levelData.config.sprite_width + 1, this.levelData.config.sprite_height + 1); // 0.5 for 1 px stroke
-                        context.stroke();
-                    }
-                }
-                context.closePath();
+            if (this.mouseEvent && this.mouseEvent.down && this.mouseEvent.up && this.cellsSelected.length > 0) {
+                const x_min = Math.min(...this.cellsSelected.map((cell) => cell.x));
+                const x_max = Math.max(...this.cellsSelected.map((cell) => cell.x));
+                const y_min = Math.min(...this.cellsSelected.map((cell) => cell.y));
+                const y_max = Math.max(...this.cellsSelected.map((cell) => cell.y));
+                this.drawGrid(context, x_min, y_min, x_max - x_min + 1, y_max - y_min + 1, this.levelData.config.sprite_width, this.levelData.config.sprite_height, 'blue', this.grid, true);
             }
+        }
+    }
+
+    private drawGrid(context: CanvasRenderingContext2D, gx: number, gy: number, gw: number, gh: number, sw: number, sh: number, strokeStyle: string | CanvasGradient | CanvasPattern, grid: boolean, fill: boolean): void {
+        if (fill) {
+            context.beginPath();
+            context.globalAlpha = 0.2;
+            context.strokeStyle = strokeStyle;
+            context.fillRect(
+                grid ? (gx * (sw + 1) + 0.5) : (gx * sw), // 0.5 for 1 px stroke
+                grid ? (gy * (sh + 1) + 0.5) : (gy * sh), // 0.5 for 1 px stroke
+                grid ? (gw * (sw + 1) + 1 + 0.5) : (gw * sw), // 0.5 for 1 px stroke
+                grid ? (gh * (sh + 1) + 1 + 0.5) : (gh * sh) // 0.5 for 1 px stroke
+            );
+            context.stroke();
+            context.closePath();
+        }
+        if (grid) {
+            context.beginPath();
+            context.globalAlpha = 0.5;
+            context.strokeStyle = strokeStyle;
+            for (let x = gx; x <= gx + gw; x++) {
+                context.moveTo(x * (sw + 1) + 0.5, gy * (sh + 1) + 0.5); // 0.5 for 1 px stroke
+                context.lineTo(x * (sw + 1) + 0.5, (gy + gh) * (sh + 1) + 0.5); // 0.5 for 1 px stroke
+                context.stroke();
+            }
+            for (let y = gy; y <= gy + gh; y++) {
+                context.moveTo(gx * (sw + 1) + 0.5, y * (sh + 1) + 0.5); // 0.5 for 1 px stroke
+                context.lineTo((gx + gw) * (sw + 1) + 0.5, y * (sh + 1) + 0.5); // 0.5 for 1 px stroke
+                context.stroke();
+            }
+            context.closePath();
         }
     }
 
