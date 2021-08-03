@@ -7,33 +7,42 @@ const dirRootJSON = argv[0];
 const dirRootTS = argv[1];
 const space = '    ';
 
-console.log('[option-json-ts-mapper] dirRootJSON:\t' + dirRootJSON);
-console.log('[option-json-ts-mapper] dirRootTS:\t' + dirRootTS);
+console.log('[json-ts-mapper] dirRootJSON:\t' + dirRootJSON);
+console.log('[json-ts-mapper] dirRootTS:\t' + dirRootTS);
 
 findJSON(dirRootJSON);
 
-// HELP
+// FUNCTION
 
 function findJSON(dirJSON) {
     const exists = fs.existsSync(dirJSON);
     if (exists) {
         const files = fs.readdirSync(dirJSON, { encoding: 'utf8', withFileTypes: true });
+        let dataIndex = '';
         for (const file of files) {
             if (file.isDirectory() && !file.isFile()) {
-                findJSON(path.join(dirJSON, file.name));
+                dataIndex += findJSON(path.join(dirJSON, file.name));
             } else if (file.isFile() && !file.isDirectory()) {
                 const pathJSON = path.join(dirJSON, file.name);
                 const pathTS = path.join(dirRootTS, dirJSON.replace(dirRootJSON, ''), file.name.split('.').slice(0, -1).join('') + '.ts');
-                mapJSON(pathJSON, pathTS);
+                dataIndex += mapJSON(pathJSON, pathTS);
             }
         }
+        if (dataIndex) {
+            const pathIndex = path.join(dirRootTS, dirJSON.replace(dirRootJSON, ''), 'index.ts');
+            fs.writeFileSync(pathIndex, dataIndex, { encoding: 'utf8' });
+            console.log('[json-ts-mapper] created:\t' + pathIndex);
+            const name = dirJSON.split('\\').pop();
+            return `export * as ${toCamelCase(name)} from './${name}';\n`;
+        }
     }
+    return '';
 }
 
 function mapJSON(pathJSON, pathTS) {
     const exists = fs.existsSync(pathJSON);
     if (exists) {
-        console.log('[option-json-ts-mapper] creating:\t' + pathJSON);
+        console.log('[json-ts-mapper] creating:\t' + pathJSON);
         let dataJSON = JSON.parse(fs.readFileSync(pathJSON, { encoding: 'utf8' }));
         let dataTS = '';
         // IMPORTS
@@ -48,13 +57,16 @@ function mapJSON(pathJSON, pathTS) {
             switch (type) {
                 case 'block': dataTS += mapJSONWithBlock(name, sprite); break;
             }
-            console.log('[option-json-ts-mapper] added block:\t' + name);
+            console.log('[json-ts-mapper] added block:\t' + name);
         }
         const dirTS = path.dirname(pathTS);
         fs.mkdirSync(dirTS, { recursive: true, });
         fs.writeFileSync(pathTS, dataTS, { encoding: 'utf8' });
-        console.log('[option-json-ts-mapper] created:\t' + pathTS);
+        console.log('[json-ts-mapper] created:\t' + pathTS);
+        const name = pathTS.split('\\').pop().split('.').slice(0, -1)[0];
+        return `export * as ${toCamelCase(name)} from './${name}';\n`;
     }
+    return '';
 }
 
 function mapJSONWithBlock(name, sprite) {
@@ -71,4 +83,10 @@ function mapJSONWithBlock(name, sprite) {
     dataTS += `};\n`;
     //
     return dataTS;
+}
+
+// SUPPORT
+
+function toCamelCase(s) {
+    return s.split(/-|_|\./).filter((s) => s).map((s) => s[0].toUpperCase() + s.slice(1).toLowerCase()).join('');
 }
