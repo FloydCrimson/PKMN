@@ -5,6 +5,15 @@
     <label><span>sprite_height</span><input type="number" [(ngModel)]="levelUI.config.sprite_height" (ngModelChange)="update()"></label>
     <label><span>level_width</span><input type="number" [(ngModel)]="levelUI.config.level_width" (ngModelChange)="update()"></label>
     <label><span>level_height</span><input type="number" [(ngModel)]="levelUI.config.level_height" (ngModelChange)="update()"></label>
-    <label *ngFor="let input of inputsSelected; let i = index"><span>{{ 'index_' + i }}</span><button (click)="onInputSet(input, i)">Set</button><button (click)="onInputRemove(input, i)">Remove</button><span>{{ input.option?.id }}</span></label>
+    <div *ngFor="let layer of matrixSelected?.layers; let i_layer = index" class="layer-container">
+        <label><span>level</span><input type="number" [(ngModel)]="layer.level" (ngModelChange)="onLevelChange(i_layer)"></label>
+        <label><span>collision_type</span><select [(ngModel)]="layer.collision_type" (ngModelChange)="onCollisionTypeChange(i_layer)"><option *ngFor="let option of collisionOptions">{{ option }}</option></select></label>
+        <label><span>movement_type</span><select [(ngModel)]="layer.movement_type" (ngModelChange)="onMovementTypeChange(i_layer)"><option *ngFor="let option of movementOptions">{{ option }}</option></select></label>
+        <label *ngFor="let sprite of layer.sprites; let i_sprite = index"><span>{{ 'index_' + i_sprite }}</span><button (click)="onSpriteChange(i_layer, i_sprite, explorerComponentOptionSpritesSelectImage)">Set</button><button (click)="onSpriteChange(i_layer, i_sprite)">Remove</button><span>{{ sprite.option?.id }}</span></label>
+    </div>
+    <div *ngIf="matrixSelected">
+        <button (click)="onLayerChange(1)">Add</button>
+        <button [disabled]="matrixSelected!.layers.length <= 1" (click)="onLayerChange(-1)">Remove</button>
+    </div>
     <span class="error">{{ error }}</span>
 </div>

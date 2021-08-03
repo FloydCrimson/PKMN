@@ -1,4 +1,4 @@
-import { EventEmitter, ViewContainerRef } from "@angular/core";
+import { EventEmitter, ViewContainerRef } from '@angular/core';
 
 export interface ExplorerImplementation {
     /** constructor */ viewContainerRef?: ViewContainerRef;

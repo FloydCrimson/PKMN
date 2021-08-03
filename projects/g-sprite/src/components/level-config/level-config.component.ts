@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ModulesService } from '@node-cs/client';
-import { Subject } from 'rxjs';
 
 import { LevelDataType, LevelComponentImplementation, LevelImageType } from '../../implementations/level.implementation';
 import { OptionDataSpritesTypeImplementation } from '../../implementations/option.implementation';
@@ -32,9 +31,12 @@ export class LevelConfigComponent implements LevelComponentImplementation {
 
     @Output('onSaveLevel') public onSaveLevelEmitter = new EventEmitter();
     @Output('onLevelDataChange') public onLevelDataChangeEmitter = new EventEmitter<LevelDataType>();
-    @Output('onLevelDrawChange') public onLevelDrawChangeEmitter = new EventEmitter<{ x: number; y: number; images: { id: string; src: string; depth: number; }[]; }[]>();
+    @Output('onLevelDrawChange') public onLevelDrawChangeEmitter = new EventEmitter<{ x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[]>();
 
-    public inputsSelected: LevelDataImageUIType[] = [];
+    public readonly collisionOptions = [LevelDataCellLayerCollisionTypeUIEnum.Floor, LevelDataCellLayerCollisionTypeUIEnum.Wall, LevelDataCellLayerCollisionTypeUIEnum.Bridge];
+    public readonly movementOptions = [LevelDataCellLayerMovementTypeUIEnum.Ground, LevelDataCellLayerMovementTypeUIEnum.Water, LevelDataCellLayerMovementTypeUIEnum.Lava, LevelDataCellLayerMovementTypeUIEnum.Air];
+
+    public matrixSelected?: LevelDataCellUIType;
 
     public error: string = '';
     public name: string = '';
@@ -76,7 +78,14 @@ export class LevelConfigComponent implements LevelComponentImplementation {
                     level_width: '1',
                     level_height: '1',
                 },
-                matrix: [[{ cells: this.getImagesUI(21), selected: false }]]
+                matrix: [[{
+                    layers: [{
+                        level: 1,
+                        collision_type: LevelDataCellLayerCollisionTypeUIEnum.Floor,
+                        movement_type: LevelDataCellLayerMovementTypeUIEnum.Ground,
+                        sprites: this.getSpritesUI(11)
+                    }]
+                }]]
             };
         }
     }
@@ -84,24 +93,74 @@ export class LevelConfigComponent implements LevelComponentImplementation {
     private onCellsSelectedChange(cellsSelected: { x: number; y: number; }[]): void {
         if (cellsSelected.length > 0) {
             if (cellsSelected.length === 1) {
-                this.inputsSelected = this.levelUI.matrix[cellsSelected[0].y][cellsSelected[0].x].cells.map((image) => { return { option: image.option }; });
+                this.matrixSelected = JSON.parse(JSON.stringify(this.levelUI.matrix[cellsSelected[0].y][cellsSelected[0].x])); // Cloning
             } else {
-                this.inputsSelected = this.getImagesUI(21);
+                const length = Math.max(...this.cellsSelected.map((coor) => this.levelUI.matrix[coor.y][coor.x].layers.length));
+                this.matrixSelected = { layers: this.getLayersUI(length) };
             }
         } else {
-            this.inputsSelected = [];
+            this.matrixSelected = undefined;
         }
     }
 
-    public onInputSet(input: LevelDataImageUIType, index: number): void {
-        input.option = this.explorerComponentOptionSpritesSelectImage;
-        this.cellsSelected.forEach((coor) => this.levelUI.matrix[coor.y][coor.x].cells[index].option = this.explorerComponentOptionSpritesSelectImage);
+    public onLevelChange(i_layer: number): void {
+        const level = this.matrixSelected!.layers[i_layer].level;
+        this.cellsSelected.forEach((coor) => {
+            if (this.levelUI.matrix[coor.y][coor.x].layers.length <= i_layer) {
+                this.levelUI.matrix[coor.y][coor.x].layers.push(...this.getLayersUI(i_layer - this.levelUI.matrix[coor.y][coor.x].layers.length + 1));
+            }
+            this.levelUI.matrix[coor.y][coor.x].layers[i_layer].level = level;
+        });
         this.update();
     }
 
-    public onInputRemove(input: LevelDataImageUIType, index: number): void {
-        input.option = undefined;
-        this.cellsSelected.forEach((coor) => this.levelUI.matrix[coor.y][coor.x].cells[index].option = undefined);
+    public onCollisionTypeChange(i_layer: number): void {
+        const collision_type = this.matrixSelected!.layers[i_layer].collision_type;
+        this.cellsSelected.forEach((coor) => {
+            if (this.levelUI.matrix[coor.y][coor.x].layers.length <= i_layer) {
+                this.levelUI.matrix[coor.y][coor.x].layers.push(...this.getLayersUI(i_layer - this.levelUI.matrix[coor.y][coor.x].layers.length + 1));
+            }
+            this.levelUI.matrix[coor.y][coor.x].layers[i_layer].collision_type = collision_type;
+        });
+        this.update();
+    }
+
+    public onMovementTypeChange(i_layer: number): void {
+        const movement_type = this.matrixSelected!.layers[i_layer].movement_type;
+        this.cellsSelected.forEach((coor) => {
+            if (this.levelUI.matrix[coor.y][coor.x].layers.length <= i_layer) {
+                this.levelUI.matrix[coor.y][coor.x].layers.push(...this.getLayersUI(i_layer - this.levelUI.matrix[coor.y][coor.x].layers.length + 1));
+            }
+            this.levelUI.matrix[coor.y][coor.x].layers[i_layer].movement_type = movement_type;
+        });
+        this.update();
+    }
+
+    public onSpriteChange(i_layer: number, i_sprite: number, option?: LevelImageType): void {
+        this.matrixSelected!.layers[i_layer].sprites[i_sprite].option = option;
+        this.cellsSelected.forEach((coor) => {
+            if (this.levelUI.matrix[coor.y][coor.x].layers.length <= i_layer) {
+                this.levelUI.matrix[coor.y][coor.x].layers.push(...this.getLayersUI(i_layer - this.levelUI.matrix[coor.y][coor.x].layers.length + 1));
+            }
+            this.levelUI.matrix[coor.y][coor.x].layers[i_layer].sprites[i_sprite].option = option;
+        });
+        this.update();
+    }
+
+    public onLayerChange(offset: number): void {
+        if (offset > 0) {
+            this.matrixSelected!.layers.push(...this.getLayersUI(offset));
+        } else if (offset < 0) {
+            this.matrixSelected!.layers.splice(offset);
+        }
+        this.cellsSelected.forEach((coor) => {
+            const diff = this.matrixSelected!.layers.length - this.levelUI.matrix[coor.y][coor.x].layers.length;
+            if (diff > 0) {
+                this.levelUI.matrix[coor.y][coor.x].layers.push(...this.getLayersUI(diff));
+            } else if (diff < 0) {
+                this.levelUI.matrix[coor.y][coor.x].layers.splice(diff);
+            }
+        });
         this.update();
     }
 
@@ -138,7 +197,7 @@ export class LevelConfigComponent implements LevelComponentImplementation {
         if (width > this.levelUI.matrix[0].length) {
             for (let y = 0; y < this.levelUI.matrix.length; y++) {
                 for (let i = this.levelUI.matrix[y].length; i < width; i++) {
-                    this.levelUI.matrix[y].push({ cells: this.getImagesUI(21), selected: false });
+                    this.levelUI.matrix[y].push(...this.getCellsUI(1));
                 }
             }
         } else if (width < this.levelUI.matrix[0].length) {
@@ -150,15 +209,15 @@ export class LevelConfigComponent implements LevelComponentImplementation {
             for (let i = this.levelUI.matrix.length; i < height; i++) {
                 const array = [];
                 for (let x = 0; x < width; x++) {
-                    array.push({ cells: this.getImagesUI(21), selected: false });
+                    array.push(...this.getCellsUI(1));
                 }
                 this.levelUI.matrix.push(array);
             }
         } else if (height < this.levelUI.matrix.length) {
             this.levelUI.matrix.splice(height);
         }
-        if (this.levelUI.matrix.some((cells) => cells.some((cell) => cell.cells.every((image) => !image.option)))) {
-            this.error = 'at least one "image.image" per cell must be defined.';
+        if (this.levelUI.matrix.some((cells) => cells.some((cell) => cell.layers.some((layer) => layer.sprites.every((sprite) => !sprite.option))))) {
+            this.error = 'at least one sprite per layer must be defined.';
             // return;
         }
         this.error = '';
@@ -174,16 +233,20 @@ export class LevelConfigComponent implements LevelComponentImplementation {
         };
         this.onLevelDataChangeEmitter.emit(this.level);
         // OptionDraw
-        const draw: { x: number; y: number; images: { id: string; src: string; depth: number; }[]; }[] = [];
+        const draw: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[] = [];
         for (let y = 0; y < this.levelUI.matrix.length; y++) {
             for (let x = 0; x < this.levelUI.matrix[y].length; x++) {
-                const cells = this.levelUI.matrix[y][x].cells.map((image, depth) => { return { image, depth }; }).filter(({ image }) => image.option);
-                if (cells.length > 0) {
-                    const images = [];
-                    for (let i = 0; i < cells.length; i++) {
-                        images.push({ id: cells[i].image.option!.id, src: await this.getSrcImage(cells[i].image.option!), depth: cells[i].depth });
+                const layers = this.levelUI.matrix[y][x].layers.map((layer) => { return { level: layer.level, collision_type: layer.collision_type, movement_type: layer.movement_type, sprites: layer.sprites.filter((sprite) => sprite.option) }; }); // .filter((layer) => layer.sprites.length > 0);
+                if (layers.length > 0) {
+                    const images = new Array<{ id: string; src: string; }[]>(layers.length);
+                    for (let i1 = 0; i1 < layers.length; i1++) {
+                        images[i1] = [];
+                        for (let i2 = 0; i2 < layers[i1].sprites.length; i2++) {
+                            const sprite = layers[i1].sprites[i2];
+                            images[i1].push({ id: sprite.option!.id, src: await this.getSrcImage(sprite.option!) });
+                        }
                     }
-                    draw.push({ x, y, images });
+                    draw.push({ x, y, layers: layers.map((layer, i1) => { return { level: layer.level, collision_type: layer.collision_type, movement_type: layer.movement_type, images: images[i1] }; }) });
                 }
             }
         }
@@ -192,12 +255,35 @@ export class LevelConfigComponent implements LevelComponentImplementation {
 
     //
 
-    private getImagesUI(length: number): LevelDataImageUIType[] {
-        const images: LevelDataImageUIType[] = [];
+    private getCellsUI(length: number): LevelDataCellUIType[] {
+        const cells: LevelDataCellUIType[] = [];
         for (let i = 0; i < length; i++) {
-            images.push({});
+            cells.push({
+                layers: this.getLayersUI(1)
+            });
         }
-        return images;
+        return cells;
+    }
+
+    private getLayersUI(length: number): LevelDataCellLayerUIType[] {
+        const layers: LevelDataCellLayerUIType[] = [];
+        for (let i = 0; i < length; i++) {
+            layers.push({
+                level: 1,
+                collision_type: LevelDataCellLayerCollisionTypeUIEnum.Floor,
+                movement_type: LevelDataCellLayerMovementTypeUIEnum.Ground,
+                sprites: this.getSpritesUI(11)
+            });
+        }
+        return layers;
+    }
+
+    private getSpritesUI(length: number): LevelDataCellLayerSpriteUIType[] {
+        const sprites: LevelDataCellLayerSpriteUIType[] = [];
+        for (let i = 0; i < length; i++) {
+            sprites.push({});
+        }
+        return sprites;
     }
 
     private async getSrcImage(option: LevelImageType): Promise<string> {
@@ -227,8 +313,6 @@ export class LevelConfigComponent implements LevelComponentImplementation {
         }).catch(_ => '');
     }
 
-    //
-
     private getSrcImageFromBlock(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, image: HTMLImageElement, option: LevelImageType): string {
         const data = option.option.sprites[option.name].data as OptionDataSpritesTypeImplementation['block'];
         const i = data.cells[option.image];
@@ -250,9 +334,40 @@ type LevelDataUIType = {
         level_width: string;
         level_height: string;
     };
-    matrix: { cells: LevelDataImageUIType[]; selected: boolean; }[][];
+    matrix: LevelDataCellUIType[][];
 };
 
-type LevelDataImageUIType = {
+type LevelDataCellUIType = {
+    layers: LevelDataCellLayerUIType[];
+};
+
+type LevelDataCellLayerUIType = {
+    level: number;
+    collision_type: LevelDataCellLayerCollisionTypeUIEnum;
+    movement_type: LevelDataCellLayerMovementTypeUIEnum;
+    sprites: LevelDataCellLayerSpriteUIType[];
+};
+
+type LevelDataCellLayerSpriteUIType = {
     option?: LevelImageType;
 };
+
+export enum LevelDataCellLayerCollisionTypeUIEnum {
+    /** Normal type. Player can walk over it if the level is the same. */
+    Floor = 'floor',
+    /** Blocking type. Player can never walk over it and the level is ignored. */
+    Wall = 'wall',
+    /** Connecting type. Player can always walk over it and must be used to allow the player to change level. */
+    Bridge = 'bridge'
+}
+
+export enum LevelDataCellLayerMovementTypeUIEnum {
+    /** Normal type. Player can always walk over it. */
+    Ground = 'ground',
+    /** Special type. Player can walk over it only if special conditions are met (es. right pkm in party). */
+    Water = 'water',
+    /** Special type. Player can walk over it only if special conditions are met (es. right pkm in party). */
+    Lava = 'lava',
+    /** Special type. Player can walk over it only if special conditions are met (es. right pkm in party). */
+    Air = 'air'
+}

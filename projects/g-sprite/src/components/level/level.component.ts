@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 import { LevelDataType, LevelImageType } from '../../implementations/level.implementation';
+import { LevelDataCellLayerCollisionTypeUIEnum, LevelDataCellLayerMovementTypeUIEnum } from '../level-config/level-config.component';
 
 @Component({
     selector: 'level-component',
@@ -12,14 +13,14 @@ export class LevelComponent {
     @Input('explorerComponentOptionSpritesSelectImage') public explorerComponentOptionSpritesSelectImage?: LevelImageType;
 
     public levelData?: LevelDataType;
-    public levelDraw?: { x: number; y: number; images: { id: string; src: string; depth: number; }[]; }[];
+    public levelDraw?: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[];
     public cellsSelected: { x: number; y: number; }[] = [];
 
     public onLevelDataChange(levelData: LevelDataType): void {
         this.levelData = levelData;
     }
 
-    public onLevelDrawChange(levelDraw?: { x: number; y: number; images: { id: string; src: string; depth: number; }[]; }[]): void {
+    public onLevelDrawChange(levelDraw?: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[]): void {
         this.levelDraw = levelDraw;
     }
 

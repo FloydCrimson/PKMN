@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 
 import { LevelDataType } from '../../implementations/level.implementation';
+import { LevelDataCellLayerCollisionTypeUIEnum, LevelDataCellLayerMovementTypeUIEnum } from '../level-config/level-config.component';
 
 @Component({
     selector: 'level-canvas-component',
@@ -18,11 +19,11 @@ export class LevelCanvasComponent {
         return this._levelData;
     };
 
-    private _levelDraw?: { x: number; y: number; images: { id: string; src: string; depth: number; }[]; }[];
-    @Input('levelDraw') public set levelDraw(levelDraw: { x: number; y: number; images: { id: string; src: string; depth: number; }[]; }[] | undefined) {
+    private _levelDraw?: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[];
+    @Input('levelDraw') public set levelDraw(levelDraw: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[] | undefined) {
         this.onlevelDrawChange(this._levelDraw = levelDraw);
     };
-    public get levelDraw(): { x: number; y: number; images: { id: string; src: string; depth: number; }[]; }[] | undefined {
+    public get levelDraw(): { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[] | undefined {
         return this._levelDraw;
     };
 
@@ -30,6 +31,7 @@ export class LevelCanvasComponent {
 
     @ViewChild('canvas', { static: true }) public canvasElementRef?: ElementRef;
 
+    public level: boolean = false;
     public grid: boolean = true;
 
     private mouseEvent: { down?: MouseEvent; up?: MouseEvent; } = {};
@@ -69,7 +71,7 @@ export class LevelCanvasComponent {
         }
     }
 
-    public async onlevelDrawChange(levelDraw?: { x: number; y: number; images: { id: string; src: string; depth: number; }[]; }[]): Promise<void> {
+    public async onlevelDrawChange(levelDraw?: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[]): Promise<void> {
         await this.draw();
     }
 
@@ -97,9 +99,48 @@ export class LevelCanvasComponent {
                     const y = this.grid ? (draw.y * this.levelData.config.sprite_height + draw.y + 1) : (draw.y * this.levelData.config.sprite_height);
                     const width = this.levelData.config.sprite_width;
                     const height = this.levelData.config.sprite_height;
-                    for (const { id, src } of draw.images.sort((i1, i2) => i1.depth - i2.depth)) {
-                        const image = await this.getSrcImage(id, src);
-                        context.drawImage(image, x, y, width, height);
+                    for (const { images } of draw.layers) {
+                        for (const { id, src } of images) {
+                            const image = await this.getSrcImage(id, src);
+                            context.drawImage(image, x, y, width, height);
+                        }
+                    }
+                }
+                context.closePath();
+            }
+            // Level
+            if (this.levelDraw && this.level) {
+                context.beginPath();
+                for (const draw of this.levelDraw) {
+                    const x = this.grid ? (draw.x * this.levelData.config.sprite_width + draw.x + 1) : (draw.x * this.levelData.config.sprite_width);
+                    const y = this.grid ? (draw.y * this.levelData.config.sprite_height + draw.y + 1) : (draw.y * this.levelData.config.sprite_height);
+                    const width = this.levelData.config.sprite_width / draw.layers.length;
+                    const height = this.levelData.config.sprite_height;
+                    for (let i = 0; i < draw.layers.length; i++) {
+                        // Background
+                        context.globalAlpha = 0.2;
+                        switch (draw.layers[i].collision_type) {
+                            case LevelDataCellLayerCollisionTypeUIEnum.Floor: context.fillStyle = 'green'; break;
+                            case LevelDataCellLayerCollisionTypeUIEnum.Wall: context.fillStyle = 'red'; break;
+                            case LevelDataCellLayerCollisionTypeUIEnum.Bridge: context.fillStyle = 'yellow'; break;
+                        }
+                        context.fillRect(x + (i * width), y, width, height);
+                        // Text
+                        const texts = [];
+                        texts.push(draw.layers[i].level.toString());
+                        texts.push(draw.layers[i].collision_type[0]);
+                        texts.push(draw.layers[i].movement_type[0]);
+                        const font_space = height / (4 * texts.length);
+                        const font_height = (height - (texts.length + 1) * font_space) / texts.length;
+                        context.globalAlpha = 1;
+                        context.font = `${font_height}px Arial`;
+                        for (let j = 0; j < texts.length; j++) {
+                            context.fillStyle = 'white';
+                            context.fillText(texts[j], x + (i * width) + (width / 4), y + (j + 1) * (font_space + font_height));
+                            context.strokeStyle = 'black';
+                            context.lineWidth = 1;
+                            context.strokeText(texts[j], x + (i * width) + (width / 4), y + (j + 1) * (font_space + font_height));
+                        }
                     }
                 }
                 context.closePath();
@@ -115,24 +156,23 @@ export class LevelCanvasComponent {
         }
     }
 
-    private drawGrid(context: CanvasRenderingContext2D, gx: number, gy: number, gw: number, gh: number, sw: number, sh: number, strokeStyle: string | CanvasGradient | CanvasPattern, grid: boolean, fill: boolean): void {
+    private drawGrid(context: CanvasRenderingContext2D, gx: number, gy: number, gw: number, gh: number, sw: number, sh: number, style: string | CanvasGradient | CanvasPattern, grid: boolean, fill: boolean): void {
         if (fill) {
             context.beginPath();
-            context.globalAlpha = 0.2;
-            context.strokeStyle = strokeStyle;
+            context.globalAlpha = 0.1;
+            context.fillStyle = style;
             context.fillRect(
                 grid ? (gx * (sw + 1) + 0.5) : (gx * sw), // 0.5 for 1 px stroke
                 grid ? (gy * (sh + 1) + 0.5) : (gy * sh), // 0.5 for 1 px stroke
                 grid ? (gw * (sw + 1) + 1 + 0.5) : (gw * sw), // 0.5 for 1 px stroke
                 grid ? (gh * (sh + 1) + 1 + 0.5) : (gh * sh) // 0.5 for 1 px stroke
             );
-            context.stroke();
             context.closePath();
         }
         if (grid) {
             context.beginPath();
             context.globalAlpha = 0.5;
-            context.strokeStyle = strokeStyle;
+            context.strokeStyle = style;
             for (let x = gx; x <= gx + gw; x++) {
                 context.moveTo(x * (sw + 1) + 0.5, gy * (sh + 1) + 0.5); // 0.5 for 1 px stroke
                 context.lineTo(x * (sw + 1) + 0.5, (gy + gh) * (sh + 1) + 0.5); // 0.5 for 1 px stroke
