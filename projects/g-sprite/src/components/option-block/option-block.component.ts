@@ -58,11 +58,12 @@ export class OptionBlockComponent implements OptionComponentImplementation {
                 sprite_height: data.sprite_height.toString(),
                 block_width: data.block_width.toString(),
                 block_height: data.block_height.toString(),
-                cells: Object.keys(data.cells).reduce((pv, cv) => {
-                    const index = data.cells[cv];
-                    pv[index].suffix = cv;
+                array: Object.keys(data.array).reduce((pv, cv) => {
+                    const index = parseInt(cv);
+                    const name = data.array[index];
+                    pv[index].name = name;
                     return pv;
-                }, new Array(data.block_width * data.block_height).fill({}).map(_ => { return { suffix: '', selected: false }; }))
+                }, new Array(data.block_width * data.block_height).fill({}).map(_ => { return { name: '', selected: false }; }))
             };
         } else {
             return {
@@ -70,20 +71,20 @@ export class OptionBlockComponent implements OptionComponentImplementation {
                 sprite_height: '1',
                 block_width: '1',
                 block_height: '1',
-                cells: [{
-                    suffix: '',
+                array: [{
+                    name: '',
                     selected: false
                 }]
             };
         }
     }
 
-    public onCellSelectedChange(cell: { suffix: string; selected: boolean; }, index: number): void {
-        for (let i = 0; i < this.optionUI.cells.length; i++) {
+    public onCellSelectedChange(cell: { name: string; selected: boolean; }, index: number): void {
+        for (let i = 0; i < this.optionUI.array.length; i++) {
             if (index === i) {
-                this.optionUI.cells[i].selected = !cell.selected;
+                this.optionUI.array[i].selected = !cell.selected;
             } else {
-                this.optionUI.cells[i].selected = false;
+                this.optionUI.array[i].selected = false;
             }
         }
         this.update();
@@ -118,18 +119,18 @@ export class OptionBlockComponent implements OptionComponentImplementation {
             return;
         }
         const length = block_width * block_height;
-        if (length > this.optionUI.cells.length) {
-            for (let i = this.optionUI.cells.length; i < length; i++) {
-                this.optionUI.cells.push({ suffix: '', selected: false });
+        if (length > this.optionUI.array.length) {
+            for (let i = this.optionUI.array.length; i < length; i++) {
+                this.optionUI.array.push({ name: '', selected: false });
             }
-        } else if (length < this.optionUI.cells.length) {
-            this.optionUI.cells.splice(length);
+        } else if (length < this.optionUI.array.length) {
+            this.optionUI.array.splice(length);
         }
-        const cells = this.optionUI.cells.map((cell) => {
-            cell.suffix = cell.suffix.trim();
+        const array = this.optionUI.array.map((cell) => {
+            cell.name = cell.name.trim();
             return cell;
         });
-        if (cells.every((cell) => !cell.suffix)) {
+        if (array.every((cell) => !cell.name)) {
             this.error = 'at least one "cell.suffix" must be defined.';
             return;
         }
@@ -140,18 +141,18 @@ export class OptionBlockComponent implements OptionComponentImplementation {
             sprite_height,
             block_width,
             block_height,
-            cells: cells.reduce<OptionDataSpritesBlockType['cells']>((pv, cv, i) => {
-                if (cv.suffix.length > 0) {
-                    pv[cv.suffix] = i;
+            array: array.reduce<OptionDataSpritesBlockType['array']>((pv, cv, i) => {
+                if (cv.name.length > 0) {
+                    pv[i.toString()] = cv.name;
                 }
                 return pv;
             }, {})
         };
         this.onOptionDataChangeEmitter.emit({ [name]: { type: 'block', data: this.option } });
         // OptionDraw
-        const selectedIndex = cells.findIndex((cell) => cell.selected);
-        const draw = cells.reduce<{ x: number; y: number; w: number; h: number; }[]>((pv, cv, i) => {
-            if (cv.suffix.length > 0 && (selectedIndex < 0 || selectedIndex === i)) {
+        const selectedIndex = array.findIndex((cell) => cell.selected);
+        const draw = array.reduce<{ x: number; y: number; w: number; h: number; }[]>((pv, cv, i) => {
+            if (cv.name.length > 0 && (selectedIndex < 0 || selectedIndex === i)) {
                 const x = i % block_width;
                 const y = (i - x) / block_width;
                 pv.push({ x: x * sprite_width, y: y * sprite_height, w: sprite_width, h: sprite_height });
@@ -168,8 +169,8 @@ type OptionDataSpritesBlockUIType = {
     sprite_height: string;
     block_width: string;
     block_height: string;
-    cells: {
-        suffix: string;
+    array: {
+        name: string;
         selected: boolean;
     }[]
 };

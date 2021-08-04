@@ -315,7 +315,7 @@ export class LevelConfigComponent implements LevelComponentImplementation {
 
     private getSrcImageFromBlock(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, image: HTMLImageElement, option: LevelImageType): string {
         const data = option.option.sprites[option.name].data as OptionDataSpritesTypeImplementation['block'];
-        const i = data.cells[option.image];
+        const i = parseInt(option.image);
         const x = i % data.block_width;
         const y = (i - x) / data.block_width;
         const imageData = context.getImageData(x * data.sprite_width, y * data.sprite_height, data.sprite_width, data.sprite_height);

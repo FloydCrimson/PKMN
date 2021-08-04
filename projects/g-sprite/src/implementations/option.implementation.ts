@@ -30,8 +30,8 @@ export type OptionDataSpritesBlockType = {
     sprite_height: number;
     block_width: number;
     block_height: number;
-    cells: {
-        [suffix: string]: number;
+    array: {
+        [index: string]: string;
     }
 };
 

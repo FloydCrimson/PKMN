@@ -8,17 +8,17 @@
 				"sprite_height": 32,
 				"block_width": 3,
 				"block_height": 4,
-				"cells": {
-					"Full": 0,
-					"TopLeft": 3,
-					"TopMiddle": 4,
-					"TopRight": 5,
-					"CenterLeft": 6,
-					"CenterMiddle": 7,
-					"CenterRight": 8,
-					"BottomLeft": 9,
-					"BottomMiddle": 10,
-					"BottomRight": 11
+				"array": {
+					"0": "Full",
+					"3": "TopLeft",
+					"4": "TopMiddle",
+					"5": "TopRight",
+					"6": "CenterLeft",
+					"7": "CenterMiddle",
+					"8": "CenterRight",
+					"9": "BottomLeft",
+					"10": "BottomMiddle",
+					"11": "BottomRight"
 				}
 			}
 		}

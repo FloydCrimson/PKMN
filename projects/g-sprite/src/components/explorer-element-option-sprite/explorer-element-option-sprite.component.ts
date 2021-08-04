@@ -47,8 +47,8 @@ export class ExplorerElementOptionSpriteComponent extends ExplorerElementCompone
                     const spriteUI: SpriteUI = { name, type: optionData.type, data: optionData.data, images: [] };
                     if (spriteUI.type === 'block') {
                         const data = spriteUI.data as SpriteUI<'block'>['data'];
-                        for (const cell in data.cells) {
-                            spriteUI.images.push({ name: cell, selected: false });
+                        for (const index in data.array) {
+                            spriteUI.images.push({ name: index, text: data.array[index], selected: false });
                         }
                     }
                     this.sprites.push(spriteUI);
@@ -61,11 +61,11 @@ export class ExplorerElementOptionSpriteComponent extends ExplorerElementCompone
         this.onSelectImageEmitter.emit(data);
     }
 
-    public onSelectSpriteUI(sprite: SpriteUI, image: { name: string; selected: boolean; }): void {
+    public onSelectSpriteUI(sprite: SpriteUI, image: { name: string; text: string; selected: boolean; }): void {
         const position1 = this.sprites!.indexOf(sprite);
         const position2 = this.sprites![position1].images.indexOf(image);
         this.sprites!.forEach((sprite, index1) => sprite.images.forEach((image, index2) => image.selected = (index1 === position1) ? ((index2 === position2) ? !image.selected : false) : false));
-        this.onSelectImage(image.selected ? { option: this.option!, name: sprite.name, image: image.name, id: this.option!.location + ':' + sprite.name + ':' + image.name } : undefined);
+        this.onSelectImage(image.selected ? { option: this.option!, name: sprite.name, image: image.name, id: this.option!.location + ':' + sprite.name + ':' + image.text } : undefined);
     }
 
 }
@@ -74,5 +74,5 @@ type SpriteUI<K extends keyof OptionDataSpritesTypeImplementation = keyof Option
     name: string;
     type: K;
     data: OptionDataSpritesTypeImplementation[K];
-    images: { name: string; selected: boolean; }[];
+    images: { name: string; text: string; selected: boolean; }[];
 };

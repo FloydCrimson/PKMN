@@ -6,7 +6,7 @@
         <div *ngFor="let sprite of sprites" class="explorer-element-option-sprite">
             <span class="element-sprite">{{ '[' + sprite.type + '] - ' + sprite.name }}</span>
             <div *ngFor="let image of sprite.images" class="explorer-element-option-image" [ngClass]="{ 'state-selected': image.selected, 'state-deselected': !image.selected }">
-                <span class="element-sprite" (click)="onSelectSpriteUI(sprite, image)">{{ image.name }}</span>
+                <span class="element-sprite" (click)="onSelectSpriteUI(sprite, image)">{{ image.text }}</span>
             </div>
         </div>
     </div>

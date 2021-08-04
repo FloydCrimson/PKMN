@@ -6,6 +6,6 @@
     <label><span>sprite_height</span><input type="number" [(ngModel)]="optionUI.sprite_height" (ngModelChange)="update()"></label>
     <label><span>block_width</span><input type="number" [(ngModel)]="optionUI.block_width" (ngModelChange)="update()"></label>
     <label><span>block_height</span><input type="number" [(ngModel)]="optionUI.block_height" (ngModelChange)="update()"></label>
-    <label *ngFor="let cell of optionUI.cells; let i = index"><span [ngClass]="{ 'state-selected': cell.selected }" (click)="onCellSelectedChange(cell, i)">{{ 'index_' + i }}</span><input type="text" [(ngModel)]="cell.suffix" (ngModelChange)="update()"></label>
+    <label *ngFor="let cell of optionUI.array; let i = index"><span [ngClass]="{ 'state-selected': cell.selected }" (click)="onCellSelectedChange(cell, i)">{{ 'index_' + i }}</span><input type="text" [(ngModel)]="cell.name" (ngModelChange)="update()"></label>
     <span class="error">{{ error }}</span>
 </div>

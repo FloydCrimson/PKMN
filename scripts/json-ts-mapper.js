@@ -75,10 +75,10 @@ function mapJSONWithBlock(name, sprite) {
     dataTS += `\n// ${name.toUpperCase()} - BLOCK\n`;
     // BLOCK PARTIAL
     dataTS += `\nconst ${name}SpriteCoorOptionPartial: Omit<SpriteCoorOption['block'], 'i'> = { s_w: ${sprite.data.sprite_width}, s_h: ${sprite.data.sprite_height}, b_w: ${sprite.data.block_width}, b_h: ${sprite.data.block_height} };\n`;
-    // CELLS
+    // ARRAY
     dataTS += `\nexport const ${name} = {\n`;
-    Object.entries(sprite.data.cells).sort(([, p1], [, p2]) => p1 - p2).forEach(([cell, position], index, array) => {
-        dataTS += `${space}${cell}: { ...SpritePartial, s_c: SpriteService.getSpriteCoor('block', { ...${name}SpriteCoorOptionPartial, i: ${position} }) } as Sprite${(index < array.length - 1) ? ',' : ''}\n`;
+    Object.entries(sprite.data.array).sort(([i1,], [i2,]) => parseInt(i1) - parseInt(i2)).forEach(([index, image], i, a) => {
+        dataTS += `${space}${image}: { ...SpritePartial, s_c: SpriteService.getSpriteCoor('block', { ...${name}SpriteCoorOptionPartial, i: ${parseInt(index)} }) } as Sprite${(i < a.length - 1) ? ',' : ''}\n`;
     });
     dataTS += `};\n`;
     //
