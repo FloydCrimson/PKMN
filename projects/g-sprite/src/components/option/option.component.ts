@@ -40,7 +40,7 @@ export class OptionComponent {
         const rootPath = this.explorerComponentImagesSelectElement?.getRootElement()?.getPath();
         if (imagePath && rootPath) {
             const location = imagePath.replace(rootPath + '/images', '');
-            const jsonPath = rootPath.replace('/projects/game/', '/projects/g-sprite/') + '/images' + location.split('.').slice(0, -1).join('') + '.json';
+            const jsonPath = rootPath.replace('/projects/game/', '/projects/g-sprite/') + '/sprites' + location.split('.').slice(0, -1).join('') + '.json';
             const exists = await this.modulesService.getMethod('fs', 'access')(jsonPath, 'F_OK').then(_ => true).catch(_ => false);
             const json: OptionDataImplementation = exists ?
                 JSON.parse(await this.modulesService.getMethod('fs', 'readFile')(jsonPath, { encoding: 'utf8' })) :
