@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ModulesService } from '@node-cs/client';
 
-import { LevelDataType, LevelComponentImplementation, LevelImageType } from '../../implementations/level.implementation';
+import { LevelDataImplementation, LevelComponentImplementation, LevelImageType, LevelDataCellLayerCollisionTypeEnum, LevelDataCellLayerMovementTypeEnum, LevelDataCellLayerImplementation } from '../../implementations/level.implementation';
 import { OptionDataSpritesTypeImplementation } from '../../implementations/option.implementation';
 
 @Component({
@@ -29,20 +29,21 @@ export class LevelConfigComponent implements LevelComponentImplementation {
         return this._explorerComponentOptionSpritesSelectImage;
     };
 
-    @Output('onSaveLevel') public onSaveLevelEmitter = new EventEmitter();
-    @Output('onLevelDataChange') public onLevelDataChangeEmitter = new EventEmitter<LevelDataType>();
-    @Output('onLevelDrawChange') public onLevelDrawChangeEmitter = new EventEmitter<{ x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[]>();
+    @Output('onSaveLevel') public onSaveLevelEmitter = new EventEmitter<{ path: string; name: string; }>();
+    @Output('onLevelDataChange') public onLevelDataChangeEmitter = new EventEmitter<LevelDataImplementation>();
+    @Output('onLevelDrawChange') public onLevelDrawChangeEmitter = new EventEmitter<{ x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeEnum; movement_type: LevelDataCellLayerMovementTypeEnum; images: { id: string; src: string; }[]; }[]; }[]>();
 
-    public readonly collisionOptions = [LevelDataCellLayerCollisionTypeUIEnum.Floor, LevelDataCellLayerCollisionTypeUIEnum.Wall, LevelDataCellLayerCollisionTypeUIEnum.Bridge];
-    public readonly movementOptions = [LevelDataCellLayerMovementTypeUIEnum.Ground, LevelDataCellLayerMovementTypeUIEnum.Water, LevelDataCellLayerMovementTypeUIEnum.Lava, LevelDataCellLayerMovementTypeUIEnum.Air];
+    public readonly collisionOptions = [LevelDataCellLayerCollisionTypeEnum.Floor, LevelDataCellLayerCollisionTypeEnum.Wall, LevelDataCellLayerCollisionTypeEnum.Bridge];
+    public readonly movementOptions = [LevelDataCellLayerMovementTypeEnum.Ground, LevelDataCellLayerMovementTypeEnum.Water, LevelDataCellLayerMovementTypeEnum.Lava, LevelDataCellLayerMovementTypeEnum.Air];
 
     public matrixSelected?: LevelDataCellUIType;
 
     public error: string = '';
+    public path: string = '';
     public name: string = '';
     public levelUI: LevelDataUIType = this.initialize();
 
-    private level?: LevelDataType;
+    private level?: LevelDataImplementation;
 
     private canvas = document.createElement('canvas');
     private map = new Map<string, string>();
@@ -54,35 +55,31 @@ export class LevelConfigComponent implements LevelComponentImplementation {
     }
 
     public onSaveLevel(): void {
-        this.onSaveLevelEmitter.emit();
+        this.onSaveLevelEmitter.emit({ path: this.path, name: this.name });
     }
 
     //
 
-    private initialize(data?: LevelDataType): LevelDataUIType {
+    private initialize(data?: LevelDataImplementation): LevelDataUIType {
         if (data) {
             return {
-                config: {
-                    sprite_width: data.config.sprite_width.toString(),
-                    sprite_height: data.config.sprite_height.toString(),
-                    level_width: data.config.level_width.toString(),
-                    level_height: data.config.level_height.toString()
-                },
+                sprite_width: data.sprite_width.toString(),
+                sprite_height: data.sprite_height.toString(),
+                level_width: data.level_width.toString(),
+                level_height: data.level_height.toString(),
                 matrix: data.matrix as any // TODO
             };
         } else {
             return {
-                config: {
-                    sprite_width: '1',
-                    sprite_height: '1',
-                    level_width: '1',
-                    level_height: '1',
-                },
+                sprite_width: '1',
+                sprite_height: '1',
+                level_width: '1',
+                level_height: '1',
                 matrix: [[{
                     layers: [{
                         level: 1,
-                        collision_type: LevelDataCellLayerCollisionTypeUIEnum.Floor,
-                        movement_type: LevelDataCellLayerMovementTypeUIEnum.Ground,
+                        collision_type: LevelDataCellLayerCollisionTypeEnum.Floor,
+                        movement_type: LevelDataCellLayerMovementTypeEnum.Ground,
                         sprites: this.getSpritesUI(11)
                     }]
                 }]]
@@ -166,12 +163,17 @@ export class LevelConfigComponent implements LevelComponentImplementation {
 
     public async update(): Promise<void> {
         // Parse
+        const path = this.path.trim();
         const name = this.name.trim();
-        const sprite_width = this.levelUI.config.sprite_width ? parseInt(this.levelUI.config.sprite_width) : undefined;
-        const sprite_height = this.levelUI.config.sprite_height ? parseInt(this.levelUI.config.sprite_height) : undefined;
-        const level_width = this.levelUI.config.level_width ? parseInt(this.levelUI.config.level_width) : undefined;
-        const level_height = this.levelUI.config.level_height ? parseInt(this.levelUI.config.level_height) : undefined;
+        const sprite_width = this.levelUI.sprite_width ? parseInt(this.levelUI.sprite_width) : undefined;
+        const sprite_height = this.levelUI.sprite_height ? parseInt(this.levelUI.sprite_height) : undefined;
+        const level_width = this.levelUI.level_width ? parseInt(this.levelUI.level_width) : undefined;
+        const level_height = this.levelUI.level_height ? parseInt(this.levelUI.level_height) : undefined;
         // Check
+        if (!path) {
+            this.error = '"path" must be defined.';
+            return;
+        }
         if (!name) {
             this.error = '"name" must be defined.';
             return;
@@ -223,17 +225,35 @@ export class LevelConfigComponent implements LevelComponentImplementation {
         this.error = '';
         // LevelData
         this.level = {
-            config: {
-                sprite_width,
-                sprite_height,
-                level_width,
-                level_height
-            },
-            matrix: [[{}]]
+            sprite_width,
+            sprite_height,
+            level_width,
+            level_height,
+            matrix: this.levelUI.matrix.map((array) => array.map((cell) => {
+                return {
+                    layers: cell.layers.map((layer) => {
+                        return {
+                            level: layer.level,
+                            collision_type: layer.collision_type,
+                            movement_type: layer.movement_type,
+                            sprites: layer.sprites.reduce<LevelDataCellLayerImplementation['sprites']>((pv, cv, i) => {
+                                if (cv.option) {
+                                    pv[i.toString()] = {
+                                        location: cv.option.option.location,
+                                        name: cv.option.name,
+                                        image: cv.option.image
+                                    };
+                                }
+                                return pv;
+                            }, {})
+                        };
+                    })
+                };
+            }))
         };
         this.onLevelDataChangeEmitter.emit(this.level);
         // OptionDraw
-        const draw: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[] = [];
+        const draw: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeEnum; movement_type: LevelDataCellLayerMovementTypeEnum; images: { id: string; src: string; }[]; }[]; }[] = [];
         for (let y = 0; y < this.levelUI.matrix.length; y++) {
             for (let x = 0; x < this.levelUI.matrix[y].length; x++) {
                 const layers = this.levelUI.matrix[y][x].layers.map((layer) => { return { level: layer.level, collision_type: layer.collision_type, movement_type: layer.movement_type, sprites: layer.sprites.filter((sprite) => sprite.option) }; }); // .filter((layer) => layer.sprites.length > 0);
@@ -270,8 +290,8 @@ export class LevelConfigComponent implements LevelComponentImplementation {
         for (let i = 0; i < length; i++) {
             layers.push({
                 level: 1,
-                collision_type: LevelDataCellLayerCollisionTypeUIEnum.Floor,
-                movement_type: LevelDataCellLayerMovementTypeUIEnum.Ground,
+                collision_type: LevelDataCellLayerCollisionTypeEnum.Floor,
+                movement_type: LevelDataCellLayerMovementTypeEnum.Ground,
                 sprites: this.getSpritesUI(11)
             });
         }
@@ -328,12 +348,10 @@ export class LevelConfigComponent implements LevelComponentImplementation {
 }
 
 type LevelDataUIType = {
-    config: {
-        sprite_width: string;
-        sprite_height: string;
-        level_width: string;
-        level_height: string;
-    };
+    sprite_width: string;
+    sprite_height: string;
+    level_width: string;
+    level_height: string;
     matrix: LevelDataCellUIType[][];
 };
 
@@ -343,31 +361,11 @@ type LevelDataCellUIType = {
 
 type LevelDataCellLayerUIType = {
     level: number;
-    collision_type: LevelDataCellLayerCollisionTypeUIEnum;
-    movement_type: LevelDataCellLayerMovementTypeUIEnum;
+    collision_type: LevelDataCellLayerCollisionTypeEnum;
+    movement_type: LevelDataCellLayerMovementTypeEnum;
     sprites: LevelDataCellLayerSpriteUIType[];
 };
 
 type LevelDataCellLayerSpriteUIType = {
     option?: LevelImageType;
 };
-
-export enum LevelDataCellLayerCollisionTypeUIEnum {
-    /** Normal type. Player can walk over it if the level is the same. */
-    Floor = 'floor',
-    /** Blocking type. Player can never walk over it and the level is ignored. */
-    Wall = 'wall',
-    /** Connecting type. Player can always walk over it and must be used to allow the player to change level. */
-    Bridge = 'bridge'
-}
-
-export enum LevelDataCellLayerMovementTypeUIEnum {
-    /** Normal type. Player can always walk over it. */
-    Ground = 'ground',
-    /** Special type. Player can walk over it only if special conditions are met (es. right pkm in party). */
-    Water = 'water',
-    /** Special type. Player can walk over it only if special conditions are met (es. right pkm in party). */
-    Lava = 'lava',
-    /** Special type. Player can walk over it only if special conditions are met (es. right pkm in party). */
-    Air = 'air'
-}

@@ -1,10 +1,11 @@
 <div class="level-config-container">
     <button class="button-save" [disabled]="error" (click)="onSaveLevel()">Save</button>
+    <label><span>path</span><input type="text" [(ngModel)]="path" (ngModelChange)="update()"></label>
     <label><span>name</span><input type="text" [(ngModel)]="name" (ngModelChange)="update()"></label>
-    <label><span>sprite_width</span><input type="number" [(ngModel)]="levelUI.config.sprite_width" (ngModelChange)="update()"></label>
-    <label><span>sprite_height</span><input type="number" [(ngModel)]="levelUI.config.sprite_height" (ngModelChange)="update()"></label>
-    <label><span>level_width</span><input type="number" [(ngModel)]="levelUI.config.level_width" (ngModelChange)="update()"></label>
-    <label><span>level_height</span><input type="number" [(ngModel)]="levelUI.config.level_height" (ngModelChange)="update()"></label>
+    <label><span>sprite_width</span><input type="number" [(ngModel)]="levelUI.sprite_width" (ngModelChange)="update()"></label>
+    <label><span>sprite_height</span><input type="number" [(ngModel)]="levelUI.sprite_height" (ngModelChange)="update()"></label>
+    <label><span>level_width</span><input type="number" [(ngModel)]="levelUI.level_width" (ngModelChange)="update()"></label>
+    <label><span>level_height</span><input type="number" [(ngModel)]="levelUI.level_height" (ngModelChange)="update()"></label>
     <div *ngFor="let layer of matrixSelected?.layers; let i_layer = index" class="layer-container">
         <label><span>level</span><input type="number" [(ngModel)]="layer.level" (ngModelChange)="onLevelChange(i_layer)"></label>
         <label><span>collision_type</span><select [(ngModel)]="layer.collision_type" (ngModelChange)="onCollisionTypeChange(i_layer)"><option *ngFor="let option of collisionOptions">{{ option }}</option></select></label>

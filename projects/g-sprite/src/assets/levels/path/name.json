@@ -1,0 +1,20 @@
+{
+	"sprite_width": 1,
+	"sprite_height": 1,
+	"level_width": 1,
+	"level_height": 1,
+	"matrix": [
+		[
+			{
+				"layers": [
+					{
+						"level": 1,
+						"collision_type": "floor",
+						"movement_type": "ground",
+						"sprites": {}
+					}
+				]
+			}
+		]
+	]
+}

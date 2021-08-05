@@ -1,7 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 
-import { LevelDataType } from '../../implementations/level.implementation';
-import { LevelDataCellLayerCollisionTypeUIEnum, LevelDataCellLayerMovementTypeUIEnum } from '../level-config/level-config.component';
+import { LevelDataCellLayerCollisionTypeEnum, LevelDataCellLayerMovementTypeEnum, LevelDataImplementation } from '../../implementations/level.implementation';
 
 @Component({
     selector: 'level-canvas-component',
@@ -10,20 +9,20 @@ import { LevelDataCellLayerCollisionTypeUIEnum, LevelDataCellLayerMovementTypeUI
 })
 export class LevelCanvasComponent {
 
-    private _levelData?: LevelDataType;
-    @Input('levelData') public set levelData(levelData: LevelDataType | undefined) {
+    private _levelData?: LevelDataImplementation;
+    @Input('levelData') public set levelData(levelData: LevelDataImplementation | undefined) {
         this._levelData = levelData;
         this.draw();
     };
-    public get levelData(): LevelDataType | undefined {
+    public get levelData(): LevelDataImplementation | undefined {
         return this._levelData;
     };
 
-    private _levelDraw?: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[];
-    @Input('levelDraw') public set levelDraw(levelDraw: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[] | undefined) {
+    private _levelDraw?: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeEnum; movement_type: LevelDataCellLayerMovementTypeEnum; images: { id: string; src: string; }[]; }[]; }[];
+    @Input('levelDraw') public set levelDraw(levelDraw: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeEnum; movement_type: LevelDataCellLayerMovementTypeEnum; images: { id: string; src: string; }[]; }[]; }[] | undefined) {
         this.onlevelDrawChange(this._levelDraw = levelDraw);
     };
-    public get levelDraw(): { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[] | undefined {
+    public get levelDraw(): { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeEnum; movement_type: LevelDataCellLayerMovementTypeEnum; images: { id: string; src: string; }[]; }[]; }[] | undefined {
         return this._levelDraw;
     };
 
@@ -47,10 +46,10 @@ export class LevelCanvasComponent {
     public async onCanvasMouseUp(event: MouseEvent): Promise<void> {
         this.mouseEvent.up = event;
         if (this.levelData && this.mouseEvent && this.mouseEvent.down && this.mouseEvent.up) {
-            const x1 = Math.floor(this.grid ? (this.mouseEvent.down.offsetX / (this.levelData.config.sprite_width + 1)) : (this.mouseEvent.down.offsetX / this.levelData.config.sprite_width));
-            const y1 = Math.floor(this.grid ? (this.mouseEvent.down.offsetY / (this.levelData.config.sprite_height + 1)) : (this.mouseEvent.down.offsetY / this.levelData.config.sprite_height));
-            const x2 = Math.floor(this.grid ? (this.mouseEvent.up.offsetX / (this.levelData.config.sprite_width + 1)) : (this.mouseEvent.up.offsetX / this.levelData.config.sprite_width));
-            const y2 = Math.floor(this.grid ? (this.mouseEvent.up.offsetY / (this.levelData.config.sprite_height + 1)) : (this.mouseEvent.up.offsetY / this.levelData.config.sprite_height));
+            const x1 = Math.floor(this.grid ? (this.mouseEvent.down.offsetX / (this.levelData.sprite_width + 1)) : (this.mouseEvent.down.offsetX / this.levelData.sprite_width));
+            const y1 = Math.floor(this.grid ? (this.mouseEvent.down.offsetY / (this.levelData.sprite_height + 1)) : (this.mouseEvent.down.offsetY / this.levelData.sprite_height));
+            const x2 = Math.floor(this.grid ? (this.mouseEvent.up.offsetX / (this.levelData.sprite_width + 1)) : (this.mouseEvent.up.offsetX / this.levelData.sprite_width));
+            const y2 = Math.floor(this.grid ? (this.mouseEvent.up.offsetY / (this.levelData.sprite_height + 1)) : (this.mouseEvent.up.offsetY / this.levelData.sprite_height));
             const x_min = Math.min(x1, x2);
             const x_max = Math.max(x1, x2);
             const y_min = Math.min(y1, y2);
@@ -71,7 +70,7 @@ export class LevelCanvasComponent {
         }
     }
 
-    public async onlevelDrawChange(levelDraw?: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeUIEnum; movement_type: LevelDataCellLayerMovementTypeUIEnum; images: { id: string; src: string; }[]; }[]; }[]): Promise<void> {
+    public async onlevelDrawChange(levelDraw?: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeEnum; movement_type: LevelDataCellLayerMovementTypeEnum; images: { id: string; src: string; }[]; }[]; }[]): Promise<void> {
         await this.draw();
     }
 
@@ -82,23 +81,23 @@ export class LevelCanvasComponent {
         const context = canvas?.getContext('2d');
         if (this.levelData && canvas && context) {
             context.clearRect(0, 0, canvas.width, canvas.height);
-            canvas.width = this.levelData.config.level_width * this.levelData.config.sprite_width;
-            canvas.height = this.levelData.config.level_height * this.levelData.config.sprite_height;
+            canvas.width = this.levelData.level_width * this.levelData.sprite_width;
+            canvas.height = this.levelData.level_height * this.levelData.sprite_height;
             // Grid
             if (this.grid) {
-                canvas.width += this.levelData.config.level_width + 1;
-                canvas.height += this.levelData.config.level_height + 1;
-                this.drawGrid(context, 0, 0, this.levelData.config.level_width, this.levelData.config.level_height, this.levelData.config.sprite_width, this.levelData.config.sprite_height, 'red', this.grid, false);
+                canvas.width += this.levelData.level_width + 1;
+                canvas.height += this.levelData.level_height + 1;
+                this.drawGrid(context, 0, 0, this.levelData.level_width, this.levelData.level_height, this.levelData.sprite_width, this.levelData.sprite_height, 'red', this.grid, false);
             }
             // Image
             if (this.levelDraw) {
                 context.beginPath();
                 context.globalAlpha = 1;
                 for (const draw of this.levelDraw) {
-                    const x = this.grid ? (draw.x * this.levelData.config.sprite_width + draw.x + 1) : (draw.x * this.levelData.config.sprite_width);
-                    const y = this.grid ? (draw.y * this.levelData.config.sprite_height + draw.y + 1) : (draw.y * this.levelData.config.sprite_height);
-                    const width = this.levelData.config.sprite_width;
-                    const height = this.levelData.config.sprite_height;
+                    const x = this.grid ? (draw.x * this.levelData.sprite_width + draw.x + 1) : (draw.x * this.levelData.sprite_width);
+                    const y = this.grid ? (draw.y * this.levelData.sprite_height + draw.y + 1) : (draw.y * this.levelData.sprite_height);
+                    const width = this.levelData.sprite_width;
+                    const height = this.levelData.sprite_height;
                     for (const { images } of draw.layers) {
                         for (const { id, src } of images) {
                             const image = await this.getSrcImage(id, src);
@@ -112,17 +111,17 @@ export class LevelCanvasComponent {
             if (this.levelDraw && this.level) {
                 context.beginPath();
                 for (const draw of this.levelDraw) {
-                    const x = this.grid ? (draw.x * this.levelData.config.sprite_width + draw.x + 1) : (draw.x * this.levelData.config.sprite_width);
-                    const y = this.grid ? (draw.y * this.levelData.config.sprite_height + draw.y + 1) : (draw.y * this.levelData.config.sprite_height);
-                    const width = this.levelData.config.sprite_width / draw.layers.length;
-                    const height = this.levelData.config.sprite_height;
+                    const x = this.grid ? (draw.x * this.levelData.sprite_width + draw.x + 1) : (draw.x * this.levelData.sprite_width);
+                    const y = this.grid ? (draw.y * this.levelData.sprite_height + draw.y + 1) : (draw.y * this.levelData.sprite_height);
+                    const width = this.levelData.sprite_width / draw.layers.length;
+                    const height = this.levelData.sprite_height;
                     for (let i = 0; i < draw.layers.length; i++) {
                         // Background
                         context.globalAlpha = 0.2;
                         switch (draw.layers[i].collision_type) {
-                            case LevelDataCellLayerCollisionTypeUIEnum.Floor: context.fillStyle = 'green'; break;
-                            case LevelDataCellLayerCollisionTypeUIEnum.Wall: context.fillStyle = 'red'; break;
-                            case LevelDataCellLayerCollisionTypeUIEnum.Bridge: context.fillStyle = 'yellow'; break;
+                            case LevelDataCellLayerCollisionTypeEnum.Floor: context.fillStyle = 'green'; break;
+                            case LevelDataCellLayerCollisionTypeEnum.Wall: context.fillStyle = 'red'; break;
+                            case LevelDataCellLayerCollisionTypeEnum.Bridge: context.fillStyle = 'yellow'; break;
                         }
                         context.fillRect(x + (i * width), y, width, height);
                         // Text
@@ -151,7 +150,7 @@ export class LevelCanvasComponent {
                 const x_max = Math.max(...this.cellsSelected.map((cell) => cell.x));
                 const y_min = Math.min(...this.cellsSelected.map((cell) => cell.y));
                 const y_max = Math.max(...this.cellsSelected.map((cell) => cell.y));
-                this.drawGrid(context, x_min, y_min, x_max - x_min + 1, y_max - y_min + 1, this.levelData.config.sprite_width, this.levelData.config.sprite_height, 'blue', this.grid, true);
+                this.drawGrid(context, x_min, y_min, x_max - x_min + 1, y_max - y_min + 1, this.levelData.sprite_width, this.levelData.sprite_height, 'blue', this.grid, true);
             }
         }
     }
