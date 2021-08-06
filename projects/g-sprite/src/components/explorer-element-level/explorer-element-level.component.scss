@@ -1,0 +1,47 @@
+.explorer-element-component {
+  >span {
+    margin-left: 10px;
+  }
+
+  >div.elements-container {
+    margin-left: 10px;
+  }
+
+  &.type-directory {
+    &.state-opened {
+      &>span.element-symbol {
+        background-color: green;
+      }
+    }
+
+    &.state-closed {
+      &>span.element-symbol {
+        background-color: red;
+      }
+
+      >div.elements-container {
+        visibility: hidden;
+        height: 0;
+      }
+    }
+  }
+
+  &.type-file {
+    &.state-selected {
+      >span.element-name {
+        background-color: yellow;
+      }
+    }
+  }
+
+  &.type-unknown {
+    &>span.element-symbol {
+      background-color: blue;
+    }
+  }
+
+  &.state-invisible {
+    visibility: hidden;
+    height: 0;
+  }
+}

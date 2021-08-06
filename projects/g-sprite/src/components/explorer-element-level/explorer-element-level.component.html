@@ -1,0 +1,7 @@
+<div class="explorer-element-level-component" [ngClass]="{ 'type-directory': type === 'directory', 'type-file': type === 'file', 'type-unknown': type === 'unknown', 'state-opened': opened, 'state-closed': !opened, 'state-selected': selected, 'state-deselected': !selected, 'state-visible': visible, 'state-invisible': !visible }">
+    <span class="element-symbol" (click)="onOpenOrCloseElement()">{{ (type === 'directory') ? (opened ? '-' : '+') : ((type === 'unknown') ? '?' : ' ') }}</span>
+    <span class="element-name" (click)="onSelectElement(this)">{{ name }}</span>
+    <div class="elements-container">
+        <explorer-element-level-component *ngFor="let element of elements" [parent]="this" [name]="element.name" [type]="element.type" [extensions]="extensions" (onSelectElement)="onSelectElement($event)" (onSelectLevel)="onSelectLevel($event)"></explorer-element-level-component>
+    </div>
+</div>
