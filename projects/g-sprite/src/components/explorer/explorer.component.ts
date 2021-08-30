@@ -61,12 +61,12 @@ export class ExplorerComponent implements ExplorerImplementation, OnInit {
 
     public async onUpdateElement(force: boolean): Promise<void> {
         await this.element?.onUpdateElement(force);
-        this.onSelectElement(undefined);
+        await this.onSelectElement(undefined);
     }
 
-    public onSelectElement(element?: ExplorerImplementation): void {
+    public async onSelectElement(element?: ExplorerImplementation): Promise<void> {
         if (this.selectedElement && element) {
-            this.selectedElement.onSelectElement(element);
+            await this.selectedElement.onSelectElement(element);
         }
         this.onSelectElementEmitter.emit(this.selectedElement = element);
     }

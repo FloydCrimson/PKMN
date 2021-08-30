@@ -4,8 +4,8 @@
 </div>
 <div *ngIf="mode === 'sprite'" class="grid-container sprite">
   <div class="grid-left">
-    <explorer-component #explorerComponentImages [component]="explorerElementComponent" [root]="'C:/Users/Floyd/OneDrive/Documenti/GitHub/PKMN/projects/game/src/assets'" [name]="'images'" [extensions]="['png']" (onSelectElement)="onExplorerComponentImagesSelectElement($event)"></explorer-component>
-    <explorer-component #explorerComponentOption [component]="explorerElementOptionComponent" [root]="'C:/Users/Floyd/OneDrive/Documenti/GitHub/PKMN/projects/g-sprite/src/assets'" [name]="'sprites'" [extensions]="['json']" (onSelectElement)="onExplorerComponentOptionSelectElement($event)" (onSelectSprite)="onExplorerComponentOptionSelectSprite($event)"></explorer-component>
+    <explorer-component #explorerComponentImages [component]="explorerElementComponent" [root]="projectRoot + '/projects/game/src/assets'" [name]="'images'" [extensions]="['png']" (onSelectElement)="onExplorerComponentImagesSelectElement($event)"></explorer-component>
+    <explorer-component #explorerComponentOption [component]="explorerElementOptionComponent" [root]="projectRoot + '/projects/g-sprite/src/assets'" [name]="'sprites'" [extensions]="['json']" (onSelectElement)="onExplorerComponentOptionSelectElement($event)" (onSelectSprite)="onExplorerComponentOptionSelectSprite($event)"></explorer-component>
   </div>
   <div class="grid-center-right">
     <option-component #optionComponent [explorerComponentImagesSelectElement]="explorerComponentImagesSelectElement" [explorerComponentOptionSelectElement]="explorerComponentOptionSelectElement" [explorerComponentOptionSelectSprite]="explorerComponentOptionSelectSprite"></option-component>
@@ -13,10 +13,10 @@
 </div>
 <div *ngIf="mode === 'level'" class="grid-container level">
   <div class="grid-left">
-    <explorer-component #explorerComponentOptionSprites [component]="explorerElementOptionSpritesComponent" [root]="'C:/Users/Floyd/OneDrive/Documenti/GitHub/PKMN/projects/g-sprite/src/assets'" [name]="'sprites'" [extensions]="['json']" (onSelectElement)="onExplorerComponentOptionSpritesSelectElement($event)" (onSelectImage)="onExplorerComponentOptionSpritesSelectImage($event)"></explorer-component>
-    <explorer-component #explorerElementLevel [component]="explorerElementLevelComponent" [root]="'C:/Users/Floyd/OneDrive/Documenti/GitHub/PKMN/projects/g-sprite/src/assets'" [name]="'levels'" [extensions]="['json']" (onSelectElement)="onExplorerComponentLevelSelectElement($event)" (onSelectLevel)="onExplorerComponentLevelSelectLevel($event)"></explorer-component>
+    <explorer-component #explorerComponentOptionSprites [component]="explorerElementOptionSpritesComponent" [root]="projectRoot + '/projects/g-sprite/src/assets'" [name]="'sprites'" [extensions]="['json']" (onSelectElement)="onExplorerComponentOptionSpritesSelectElement($event)" (onSelectImage)="onExplorerComponentOptionSpritesSelectImage($event)"></explorer-component>
+    <explorer-component #explorerElementLevel [component]="explorerElementLevelComponent" [root]="projectRoot + '/projects/g-sprite/src/assets'" [name]="'levels'" [extensions]="['json']" (onSelectElement)="onExplorerComponentLevelSelectElement($event)" (onSelectLevel)="onExplorerComponentLevelSelectLevel($event)"></explorer-component>
   </div>
   <div class="grid-center-right">
-    <level-component #levelComponent [root]="'C:/Users/Floyd/OneDrive/Documenti/GitHub/PKMN/projects/g-sprite/src/assets/levels'" [explorerComponentOptionSpritesSelectImage]="explorerComponentOptionSpritesSelectImage"></level-component>
+    <level-component #levelComponent [explorerComponentOptionSpritesSelectImage]="explorerComponentOptionSpritesSelectImage"></level-component>
   </div>
 </div>

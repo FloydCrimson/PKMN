@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { ModulesService } from '@node-cs/client';
 
 import { LevelDataCellLayerCollisionTypeEnum, LevelDataCellLayerMovementTypeEnum, LevelDataImplementation, LevelImageType } from '../../implementations/level.implementation';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
     selector: 'level-component',
@@ -10,19 +11,21 @@ import { LevelDataCellLayerCollisionTypeEnum, LevelDataCellLayerMovementTypeEnum
 })
 export class LevelComponent {
 
-    @Input('root') public root?: string;
     @Input('explorerComponentOptionSpritesSelectImage') public explorerComponentOptionSpritesSelectImage?: LevelImageType;
 
+    public projectRoot = this.configService.getConfig().projectRoot;
     public levelData?: LevelDataImplementation;
     public levelDraw?: { x: number; y: number; layers: { level: number; collision_type: LevelDataCellLayerCollisionTypeEnum; movement_type: LevelDataCellLayerMovementTypeEnum; images: { id: string; src: string; }[]; }[]; }[];
     public cellsSelected: { x: number; y: number; }[] = [];
 
     constructor(
+        private readonly configService: ConfigService,
         private readonly modulesService: ModulesService
     ) { }
 
     public async onSaveLevel(path: string, name: string): Promise<void> {
-        const jsonPath = await this.modulesService.getMethod('path', 'join')('default', this.root!, path, name + '.json');
+        const root = this.projectRoot + '/projects/g-sprite/src/assets/levels';
+        const jsonPath = await this.modulesService.getMethod('path', 'join')('default', root, path, name + '.json');
         const exists = await this.modulesService.getMethod('fs', 'access')(jsonPath, 'F_OK').then(_ => true).catch(_ => false);
         if (!exists) {
             const jsonDir = jsonPath.split(/\\|\//).filter(f => f).slice(0, -1).join('/');

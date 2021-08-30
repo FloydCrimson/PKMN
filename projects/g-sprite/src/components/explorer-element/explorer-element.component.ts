@@ -73,7 +73,7 @@ export class ExplorerElementComponent implements ExplorerImplementation {
         }
     }
 
-    public onSelectElement(element?: ExplorerImplementation): void {
+    public async onSelectElement(element?: ExplorerImplementation): Promise<void> {
         if (this.type === 'file') {
             if (element) {
                 if (this === element) {

@@ -3,6 +3,6 @@
         <level-canvas-component [levelData]="levelData" [levelDraw]="levelDraw" (onCanvasMatrixSelection)="onCanvasMatrixSelection($event)"></level-canvas-component>
     </div>
     <div class="level-right">
-        <level-config-component [root]="'C:/Users/Floyd/OneDrive/Documenti/GitHub/PKMN/projects/game/src/assets/images'" [cellsSelected]="cellsSelected" [explorerComponentOptionSpritesSelectImage]="explorerComponentOptionSpritesSelectImage" (onSaveLevel)="onSaveLevel($event.path, $event.name)" (onLevelDataChange)="onLevelDataChange($event)" (onLevelDrawChange)="onLevelDrawChange($event)"></level-config-component>
+        <level-config-component [root]="projectRoot + '/projects/game/src/assets/images'" [cellsSelected]="cellsSelected" [explorerComponentOptionSpritesSelectImage]="explorerComponentOptionSpritesSelectImage" (onSaveLevel)="onSaveLevel($event.path, $event.name)" (onLevelDataChange)="onLevelDataChange($event)" (onLevelDrawChange)="onLevelDrawChange($event)"></level-config-component>
     </div>
 </div>

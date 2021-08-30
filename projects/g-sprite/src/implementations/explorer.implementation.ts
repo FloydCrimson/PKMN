@@ -8,7 +8,7 @@ export interface ExplorerImplementation {
     /** @Input */ extensions?: string[];
     /** @Output */ onSelectElementEmitter: EventEmitter<ExplorerImplementation>;
     onUpdateElement(force: boolean): Promise<void>;
-    onSelectElement(element?: ExplorerImplementation): void;
+    onSelectElement(element?: ExplorerImplementation): Promise<void>;
     getPath(): string | undefined;
     getRootElement(): ExplorerImplementation | undefined;
 }

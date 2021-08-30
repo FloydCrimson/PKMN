@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { ExplorerImplementation } from '../../implementations/explorer.implementation';
 import { LevelDataImplementation } from '../../implementations/level.implementation';
 
 import { ExplorerElementComponent } from '../explorer-element/explorer-element.component';
@@ -12,8 +13,8 @@ export class ExplorerElementLevelComponent extends ExplorerElementComponent {
 
     @Output('onSelectLevel') public onSelectLevelEmitter = new EventEmitter<{ path: string; name: string; data: LevelDataImplementation; }>();
 
-    public async onSelectElement(element?: ExplorerElementLevelComponent): Promise<void> {
-        if (element?.type === "file") {
+    public async onSelectElement(element?: ExplorerImplementation): Promise<void> {
+        if (element?.type === 'file') {
             const jsonPath = this.getPath();
             const rootPath = this.getRootElement()?.getPath();
             if (!jsonPath) {
@@ -27,7 +28,7 @@ export class ExplorerElementLevelComponent extends ExplorerElementComponent {
             const data: LevelDataImplementation = JSON.parse(await this.modulesService.getMethod('fs', 'readFile')(jsonPath, { encoding: 'utf8' }));
             this.onSelectLevel({ path, name, data });
         }
-        super.onSelectElement(element);
+        await super.onSelectElement(element);
     }
 
     public onSelectLevel(data: { path: string; name: string; data: LevelDataImplementation; }): void {

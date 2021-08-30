@@ -3,6 +3,7 @@ import { Component, Type, ViewChild } from '@angular/core';
 import { ExplorerImplementation } from '../../implementations/explorer.implementation';
 import { LevelDataImplementation, LevelImageType } from '../../implementations/level.implementation';
 import { OptionDataImplementation } from '../../implementations/option.implementation';
+import { ConfigService } from '../../services/config.service';
 import { ExplorerElementLevelComponent } from '../explorer-element-level/explorer-element-level.component';
 import { ExplorerElementOptionSpriteComponent } from '../explorer-element-option-sprite/explorer-element-option-sprite.component';
 import { ExplorerElementOptionComponent } from '../explorer-element-option/explorer-element-option.component';
@@ -30,6 +31,7 @@ export class GridComponent {
   @ViewChild('optionComponent', { static: true }) public optionComponent?: OptionComponent;
   @ViewChild('levelComponent', { static: true }) public levelComponent?: LevelComponent;
 
+  public projectRoot = this.configService.getConfig().projectRoot;
   public mode: 'sprite' | 'level' = 'sprite';
   public explorerComponentImagesSelectElement?: ExplorerImplementation;
   public explorerComponentOptionSelectElement?: ExplorerImplementation;
@@ -38,6 +40,10 @@ export class GridComponent {
   public explorerComponentOptionSpritesSelectImage?: LevelImageType;
   public explorerComponentLevelSelectElement?: ExplorerImplementation;
   public explorerComponentLevelSelectLevel?: { path: string; name: string; data: LevelDataImplementation; };
+
+  constructor(
+    private readonly configService: ConfigService
+  ) { }
 
   public onChangeModeClick(mode: 'sprite' | 'level'): void {
     this.mode = mode;
